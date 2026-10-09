@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function() {
+        try {
+          var _rawFetch = window.fetch;
+          var _fetch = typeof _rawFetch === 'function' ? _rawFetch.bind(window) : _rawFetch;
+          var _desc = {
+            get: function() { return _fetch; },
+            set: function(fn) { _fetch = fn; },
+            configurable: true,
+            enumerable: true
+          };
+          try {
+            Object.defineProperty(window, 'fetch', _desc);
+          } catch (e1) {
+            try {
+              if (window.Window && window.Window.prototype) {
+                Object.defineProperty(window.Window.prototype, 'fetch', _desc);
+              }
+            } catch (e2) {}
+          }
+          if (typeof globalThis !== 'undefined' && globalThis !== window) {
+            try {
+              Object.defineProperty(globalThis, 'fetch', _desc);
+            } catch (e3) {}
+          }
+        } catch (err) {
+          // ignore
+        }
+
+        // Global prevention of uncaught AbortErrors / user-initiated request cancellations
+        function isAbortReason(reason) {
+          if (!reason) return false;
+          if (reason.name === 'AbortError') return true;
+          var msg = (typeof reason.message === 'string' ? reason.message : '') + ' ' + (typeof reason === 'string' ? reason : '');
+          if (
+            msg.indexOf('aborted') !== -1 ||
+            msg.indexOf('The user aborted a request') !== -1 ||
+            msg.indexOf('signal is aborted') !== -1 ||
+            msg.indexOf('popup-closed-by-user') !== -1 ||
+            msg.indexOf('cancelled-popup-request') !== -1
+          ) {
+            return true;
+          }
+          if (reason.code === 'auth/popup-closed-by-user' || reason.code === 'auth/cancelled-popup-request') {
+            return true;
+          }
+          return false;
+        }
+
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event && isAbortReason(event.reason)) {
+            event.preventDefault();
+            if (typeof event.stopImmediatePropagation === 'function') {
+              event.stopImmediatePropagation();
+            }
+          }
+        });
+
+        window.addEventListener('error', function(event) {
+          if (event && (isAbortReason(event.error) || isAbortReason(event.message))) {
+            event.preventDefault();
+            if (typeof event.stopImmediatePropagation === 'function') {
+              event.stopImmediatePropagation();
+            }
+          }
+        });
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropia Architecture Studio</title>
+    <meta name="description" content="Architecture logicielle, schémas PostgreSQL/Supabase, modèles Firestore TypeScript, règles RLS et sécurité pour Dropia en Afrique Francophone." />
+    <meta property="og:title" content="Dropia Architecture Studio" />
+    <meta property="og:description" content="Architecture logicielle, schémas PostgreSQL/Supabase, modèles Firestore TypeScript, règles RLS et sécurité pour Dropia en Afrique Francophone." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

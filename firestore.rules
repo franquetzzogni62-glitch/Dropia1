@@ -1,0 +1,198 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net default-deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ==========================================================================
+    // FONCTIONS UTILITAIRES DE SÉCURITÉ
+    // ==========================================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Récupération du document utilisateur courant
+    function currentUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.email == 'franquetzzogni6@gmail.com' && request.auth.token.email_verified == true) ||
+        request.auth.token.role == 'admin' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && currentUserDoc().role == 'admin')
+      );
+    }
+
+    function isMerchantOwner(merchantId) {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        currentUserDoc().role == 'merchant' &&
+        currentUserDoc().merchantId == merchantId
+      );
+    }
+
+    function isAgencyOwner(agencyId) {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        currentUserDoc().role == 'agency' &&
+        currentUserDoc().agencyId == agencyId
+      );
+    }
+
+    function isDriverAssigned(driverId) {
+      return isAuthenticated() && (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        currentUserDoc().role == 'driver' &&
+        currentUserDoc().driverId == driverId
+      );
+    }
+
+    // ==========================================================================
+    // 1. COLLECTION: users
+    // ==========================================================================
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if (isAuthenticated() && request.auth.uid == userId) ||
+                       (!isAuthenticated() && isValidId(userId) && request.resource.data.role != 'admin');
+      // Empêcher l'auto-attribution du rôle admin
+      allow update: if (isUser(userId) || isAdmin() || !isAuthenticated()) && (
+        request.resource.data.role != 'admin' || isAdmin()
+      );
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================================================
+    // NOUVELLES COLLECTIONS AUTH MULTI-RÔLES (utilisateurs, agences, ecommercants, livreurs)
+    // ==========================================================================
+    match /utilisateurs/{userId} {
+      allow read: if true;
+      allow create: if (isAuthenticated() && request.auth.uid == userId) ||
+                       (!isAuthenticated() && isValidId(userId) && request.resource.data.role != 'admin');
+      allow update: if (isAuthenticated() && (request.auth.uid == userId || isAdmin())) || !isAuthenticated();
+      allow delete: if isAdmin();
+    }
+
+    match /agences/{agencyId} {
+      allow read: if true;
+      allow create: if isAuthenticated() || (!isAuthenticated() && isValidId(agencyId));
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    match /ecommercants/{ecomId} {
+      allow read: if true;
+      allow create: if isAuthenticated() || (!isAuthenticated() && isValidId(ecomId));
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    match /livreurs/{livreurId} {
+      allow read: if true;
+      allow create: if isAuthenticated() || (!isAuthenticated() && isValidId(livreurId));
+      allow update: if true;
+      allow delete: if isAuthenticated();
+    }
+
+    match /paiements_abonnements/{paiementId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================================================
+    // 2. COLLECTION: merchants
+    // ==========================================================================
+    match /merchants/{merchantId} {
+      allow read: if true;
+      allow create: if isAuthenticated() || (!isAuthenticated() && isValidId(merchantId));
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================================================
+    // 3. COLLECTION: agencies
+    // ==========================================================================
+    match /agencies/{agencyId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================================================
+    // 4. COLLECTION: drivers
+    // ==========================================================================
+    match /drivers/{driverId} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================================================
+    // 5. COLLECTION: orders & colis
+    // ==========================================================================
+    match /orders/{orderId} {
+      allow read, write: if true;
+    }
+
+    match /colis/{colisId} {
+      allow read, write: if true;
+    }
+
+    // ==========================================================================
+    // 6. COLLECTION: deliveries
+    // ==========================================================================
+    match /deliveries/{deliveryId} {
+      allow read, write: if true;
+    }
+
+    // ==========================================================================
+    // 7. COLLECTION: transactions
+    // ==========================================================================
+    match /transactions/{transactionId} {
+      allow read, write: if true;
+    }
+
+    // ==========================================================================
+    // 8. SONDE DE CONNECTIVITÉ: test (Health Check)
+    // ==========================================================================
+    match /test/{testId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ==========================================================================
+    // 9. API REST & WEBHOOKS (Plan Business)
+    // ==========================================================================
+    match /api_keys/{keyId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /webhooks/{webhookId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    match /webhook_logs/{logId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}

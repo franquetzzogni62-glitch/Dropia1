@@ -1,0 +1,341 @@
+{
+  "entities": {
+    "Utilisateur": {
+      "title": "Utilisateur",
+      "description": "Compte utilisateur multi-rôles (agence, ecommercant, livreur)",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "nom": { "type": "string" },
+        "telephone": { "type": "string" },
+        "role": { "type": "string", "enum": ["agence", "ecommercant", "livreur"] },
+        "agenceId": { "type": "string" },
+        "ecommercantId": { "type": "string" },
+        "actif": { "type": "boolean" },
+        "dateCreation": { "type": "string" }
+      },
+      "required": ["uid", "nom", "telephone", "role", "actif"]
+    },
+    "Agence": {
+      "title": "Agence",
+      "description": "Agence de livraison 3PL avec abonnement SaaS",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nom": { "type": "string" },
+        "email": { "type": "string" },
+        "telephone": { "type": "string" },
+        "plan": { "type": "string", "enum": ["starter", "pro", "business"] },
+        "planStatut": { "type": "string", "enum": ["actif", "essai", "impaye", "annule"] },
+        "dateDebut": { "type": "string" },
+        "dateExpiration": { "type": "string" },
+        "dateProchainPaiement": { "type": "string" },
+        "limiteColis": { "type": "number" },
+        "colisUtilises": { "type": "number" },
+        "limiteLivreurs": { "type": "number" },
+        "livreursUtilises": { "type": "number" },
+        "periodeActuelle": { "type": "string" },
+        "dateResetCompteur": { "type": "string" },
+        "methodePaiement": { "type": "string", "enum": ["mobile_money", "carte"] },
+        "operateur": { "type": "string", "enum": ["orange", "mtn", "wave", "mpesa"] },
+        "telephonePaiement": { "type": "string" },
+        "dateCreation": { "type": "string" },
+        "dateDerniereModification": { "type": "string" }
+      },
+      "required": ["nom", "email", "plan", "planStatut", "limiteColis", "colisUtilises"]
+    },
+    "PaiementAbonnement": {
+      "title": "PaiementAbonnement",
+      "description": "Transaction de paiement mobile money pour abonnement SaaS",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "agenceId": { "type": "string" },
+        "nomAgence": { "type": "string" },
+        "plan": { "type": "string" },
+        "montant": { "type": "number" },
+        "devise": { "type": "string" },
+        "methode": { "type": "string" },
+        "operateur": { "type": "string" },
+        "telephone": { "type": "string" },
+        "statut": { "type": "string", "enum": ["en_attente", "reussi", "echoue"] },
+        "reference": { "type": "string" },
+        "dateCreation": { "type": "string" }
+      },
+      "required": ["agenceId", "plan", "montant", "statut"]
+    },
+    "Ecommercant": {
+      "title": "Ecommercant",
+      "description": "Commerçant e-commerce rattaché à une agence",
+      "type": "object",
+      "properties": {
+        "agenceId": { "type": "string" },
+        "nomBoutique": { "type": "string" },
+        "email": { "type": "string" },
+        "telephone": { "type": "string" },
+        "commandesTotales": { "type": "number" },
+        "actif": { "type": "boolean" },
+        "dateCreation": { "type": "string" }
+      },
+      "required": ["agenceId", "nomBoutique", "email", "telephone", "actif"]
+    },
+    "Livreur": {
+      "title": "Livreur",
+      "description": "Livreur connecté par téléphone + PIN à 4 chiffres",
+      "type": "object",
+      "properties": {
+        "agenceId": { "type": "string" },
+        "nom": { "type": "string" },
+        "telephone": { "type": "string" },
+        "zone": { "type": "string" },
+        "pin": { "type": "string" },
+        "actif": { "type": "boolean" },
+        "colisEnCours": { "type": "number" },
+        "tauxReussite": { "type": "number" },
+        "dateCreation": { "type": "string" }
+      },
+      "required": ["agenceId", "nom", "telephone", "zone", "pin", "actif"]
+    },
+    "User": {
+      "title": "User",
+      "description": "Profil utilisateur et rôle RBAC Dropia",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["merchant", "agency", "driver", "admin"] },
+        "phoneNumber": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" },
+        "merchantId": { "type": "string" },
+        "agencyId": { "type": "string" },
+        "driverId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "Merchant": {
+      "title": "Merchant",
+      "description": "Boutique ou commerçant e-commerce expéditeur Dropia",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "ownerUserId": { "type": "string" },
+        "phone": { "type": "string" },
+        "city": { "type": "string" },
+        "country": { "type": "string" },
+        "defaultWarehouseAddress": { "type": "string" },
+        "walletBalance": { "type": "number" },
+        "currency": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "ownerUserId", "city"]
+    },
+    "Agency": {
+      "title": "Agency",
+      "description": "Entreprise ou hub logistique 3PL partenaire",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "ownerUserId": { "type": "string" },
+        "city": { "type": "string" },
+        "isVerified": { "type": "boolean" },
+        "baseRateXOF": { "type": "number" },
+        "activeDriversCount": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "ownerUserId", "city"]
+    },
+    "Driver": {
+      "title": "Driver",
+      "description": "Livreur indépendant ou salarié d'une agence",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "phone": { "type": "string" },
+        "affiliationType": { "type": "string", "enum": ["merchant", "agency"] },
+        "agencyId": { "type": "string" },
+        "merchantId": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "busy", "offline"] },
+        "vehicleType": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "fullName", "phone", "status"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Colis et commande e-commerce",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "trackingNumber": { "type": "string" },
+        "merchantId": { "type": "string" },
+        "deliveryMode": { "type": "string", "enum": ["direct", "marketplace"] },
+        "assignedAgencyId": { "type": "string" },
+        "assignedDriverId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "amountCOD": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "assigned", "picked_up", "in_transit", "delivered", "cancelled", "returned"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "trackingNumber", "merchantId", "status"]
+    },
+    "Delivery": {
+      "title": "Delivery",
+      "description": "Session opérationnelle d'acheminement et preuve de livraison",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "merchantId": { "type": "string" },
+        "agencyId": { "type": "string" },
+        "driverId": { "type": "string" },
+        "status": { "type": "string" },
+        "deliveryOtp": { "type": "string" },
+        "podSignatureUrl": { "type": "string" },
+        "completedAt": { "type": "string" }
+      },
+      "required": ["id", "orderId", "status"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Écriture comptable et mouvement de fonds COD / Portefeuille",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "walletOwnerType": { "type": "string", "enum": ["merchant", "agency", "driver", "platform"] },
+        "walletOwnerId": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "type": { "type": "string", "enum": ["cod_collection", "delivery_fee", "payout", "commission"] },
+        "referenceId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "walletOwnerType", "walletOwnerId", "amount", "type"]
+    },
+    "TestProbe": {
+      "title": "TestProbe",
+      "description": "Sonde de connectivité Firestore pour vérifier la liaison réseau au démarrage",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" }
+      }
+    },
+    "ApiKey": {
+      "title": "ApiKey",
+      "description": "Clé d'authentification API REST pour l'intégration CMS et boutique externe (Plan Business)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "agenceId": { "type": "string" },
+        "nom": { "type": "string" },
+        "cle": { "type": "string" },
+        "cleHash": { "type": "string" },
+        "prefixe": { "type": "string" },
+        "permissions": { "type": "array" },
+        "actif": { "type": "boolean" },
+        "dateCreation": { "type": "string" },
+        "dateDerniereUtilisation": { "type": "string" },
+        "dateExpiration": { "type": "string" },
+        "nbAppels": { "type": "number" },
+        "derniereIp": { "type": "string" }
+      },
+      "required": ["agenceId", "nom", "cleHash", "prefixe", "permissions", "actif"]
+    },
+    "Webhook": {
+      "title": "Webhook",
+      "description": "Abonnement Webhook HTTP pour notifications en temps réel des statuts colis",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "agenceId": { "type": "string" },
+        "url": { "type": "string" },
+        "evenements": { "type": "array" },
+        "secret": { "type": "string" },
+        "actif": { "type": "boolean" },
+        "dateCreation": { "type": "string" },
+        "dateDernierEnvoi": { "type": "string" },
+        "dernierStatut": { "type": "number" },
+        "nbEchecsConsecutifs": { "type": "number" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["agenceId", "url", "evenements", "secret", "actif"]
+    },
+    "WebhookLog": {
+      "title": "WebhookLog",
+      "description": "Journal d'exécution et de transmission des notifications webhooks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "webhookId": { "type": "string" },
+        "agenceId": { "type": "string" },
+        "evenement": { "type": "string" },
+        "payload": { "type": "object" },
+        "urlCible": { "type": "string" },
+        "statutHttp": { "type": "number" },
+        "reponseCorps": { "type": "string" },
+        "tempsReponseMs": { "type": "number" },
+        "tentative": { "type": "number" },
+        "succes": { "type": "boolean" },
+        "dateEnvoi": { "type": "string" }
+      },
+      "required": ["webhookId", "agenceId", "evenement", "urlCible", "statutHttp", "succes"]
+    }
+  },
+  "firestore": {
+    "/test/{testId}": {
+      "schema": "TestProbe",
+      "description": "Point d'extrémité de test de connectivité réseau Firestore"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Gestion des utilisateurs, authentification et contrôle des rôles RBAC"
+    },
+    "/merchants/{merchantId}": {
+      "schema": "Merchant",
+      "description": "Données des commerçants et boutiques e-commerce"
+    },
+    "/agencies/{agencyId}": {
+      "schema": "Agency",
+      "description": "Données des flottes logistiques 3PL partenaires"
+    },
+    "/drivers/{driverId}": {
+      "schema": "Driver",
+      "description": "Profils des livreurs et statut en temps réel"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Commandes e-commerce, flux logistique et COD"
+    },
+    "/deliveries/{deliveryId}": {
+      "schema": "Delivery",
+      "description": "Exécutions de livraison et validations OTP / POD"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Grand livre comptable et réconciliation financière"
+    },
+    "/api_keys/{apiKeyId}": {
+      "schema": "ApiKey",
+      "description": "Clés API REST sécurisées pour marchands et CMS (Plan Business)"
+    },
+    "/webhooks/{webhookId}": {
+      "schema": "Webhook",
+      "description": "Endpoints Webhooks enregistrés pour expédition temps réel des statuts"
+    },
+    "/webhook_logs/{logId}": {
+      "schema": "WebhookLog",
+      "description": "Historique des livraisons de webhooks et codes de retour HTTP"
+    }
+  }
+}

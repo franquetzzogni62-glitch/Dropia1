@@ -1,0 +1,6 @@
+{
+  "name": "Dropia Architecture Studio",
+  "description": "Architecture logicielle, schémas PostgreSQL/Supabase, modèles Firestore TypeScript, règles RLS et sécurité pour Dropia en Afrique Francophone.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
