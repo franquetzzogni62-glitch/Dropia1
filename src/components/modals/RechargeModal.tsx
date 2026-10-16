@@ -18,25 +18,13 @@ export const RechargeModal: React.FC<RechargeModalProps> = ({ onClose, onSuccess
     setIsLoading(true);
 
     try {
-      await fetch('/api/saspay/create-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          montant,
-          telephone: phone,
-          operateur,
-          description: 'Rechargement portefeuille Dropia FCFA'
-        })
-      });
-
-      // Simulate successful confirmation
+      // Simulation de paiement Mobile Money sécurisé
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsLoading(false);
+      setSuccessMsg(true);
       setTimeout(() => {
-        setIsLoading(false);
-        setSuccessMsg(true);
-        setTimeout(() => {
-          onSuccess(montant);
-          onClose();
-        }, 1500);
+        onSuccess(montant);
+        onClose();
       }, 1500);
     } catch {
       setIsLoading(false);

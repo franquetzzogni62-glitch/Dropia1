@@ -209,5 +209,20 @@ service cloud.firestore {
       allow read: if true;
       allow write: if true;
     }
+
+    // ==========================================================================
+    // 10. ADMINISTRATION GLOBALE DROPIA (Super Admin)
+    // ==========================================================================
+    match /admins/{adminId} {
+      allow read, write: if true;
+    }
+
+    match /plateforme_config/{configId} {
+      allow read, write: if true;
+    }
+
+    match /audit_logs/{logId} {
+      allow read, write: if true;
+    }
   }
 }

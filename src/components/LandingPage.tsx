@@ -137,7 +137,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             {/* Top Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
               <span>🌍</span>
-              <span>Le SaaS logistique n°1 pour les agences de livraison en Afrique</span>
+              <span>La plateforme logistique n°1 pour les agences de livraison en Afrique</span>
             </div>
 
             {/* Main Headline */}
@@ -173,7 +173,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 className="flex items-center gap-2 px-5 py-3.5 rounded-xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-bold text-sm transition"
               >
                 <Wallet className="w-4 h-4" />
-                <span>Voir les tarifs (SasaPay)</span>
+                <span>Voir les tarifs & forfaits</span>
               </button>
 
               <button
@@ -467,7 +467,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
               <h4 className="font-bold text-white text-sm">Gestion d'abonnement</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Essai gratuit de 30 jours au plan Pro. Notifications 5 jours avant expiration. Réactivation automatique par Mobile Money via SasaPay.
+                Essai gratuit de 30 jours au plan Pro. Notifications 5 jours avant expiration. Réactivation automatique par Mobile Money (Wave, Orange, MTN).
               </p>
             </div>
 
@@ -825,7 +825,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold text-[10px]">
               D
             </div>
-            <span className="font-bold text-slate-900">Dropia SaaS Africa</span>
+            <span className="font-bold text-slate-900">Dropia Africa</span>
             <span>— La logistique nouvelle génération pour les agences.</span>
           </div>
 
@@ -834,7 +834,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               onClick={() => onOpenAuth('login')}
               className="hover:text-emerald-700 font-medium"
             >
-              Connexion SaaS
+              Connexion Agence
             </button>
             <button
               onClick={() => onOpenAuth('register')}
@@ -848,6 +848,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             >
               App Livreur (PIN)
             </button>
+            <a
+              href="/admin"
+              className="hover:text-blue-700 font-bold text-[#1E40AF]"
+            >
+              Console Super Admin
+            </a>
           </div>
         </div>
       </footer>

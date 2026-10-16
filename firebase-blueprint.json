@@ -290,9 +290,29 @@
         "dateEnvoi": { "type": "string" }
       },
       "required": ["webhookId", "agenceId", "evenement", "urlCible", "statutHttp", "succes"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Compte administrateur global de la plateforme Dropia",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "nom": { "type": "string" },
+        "role": { "type": "string", "enum": ["super_admin", "admin", "support"] },
+        "permissions": { "type": "array" },
+        "actif": { "type": "boolean" },
+        "dateCreation": { "type": "string" },
+        "dateDerniereConnexion": { "type": "string" }
+      },
+      "required": ["email", "nom", "role", "permissions", "actif"]
     }
   },
   "firestore": {
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Comptes administrateurs et super-administrateurs avec matrice de permissions"
+    },
     "/test/{testId}": {
       "schema": "TestProbe",
       "description": "Point d'extrémité de test de connectivité réseau Firestore"

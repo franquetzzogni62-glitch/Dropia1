@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Store,
   MapPin,
@@ -23,6 +24,7 @@ interface SettingsViewProps {
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ userProfile, onRefresh }) => {
+  const navigate = useNavigate();
   const [storeName, setStoreName] = useState(userProfile?.nomBoutique || userProfile?.nomAgence || userProfile?.nom || '');
   const [sector, setSector] = useState('Logistique & Distribution');
   const [pickupAddress, setPickupAddress] = useState(userProfile?.ville ? `${userProfile.ville}` : '');
@@ -330,10 +332,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ userProfile, onRefre
           </div>
 
           <button
-            onClick={() => alert('Ouverture du gestionnaire des forfaits SaaS.')}
-            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition"
+            onClick={() => navigate('/paiement?plan=pro&cycle=mensuel&montant=5500&type=abonnement')}
+            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer"
           >
-            ⚙ Gérer les forfaits & Upgrades
+            ⚙ Renouveler / Changer de formule
           </button>
         </div>
 
@@ -398,8 +400,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ userProfile, onRefre
 
           <div className="pt-2">
             <button
-              onClick={() => alert('Passage au Plan Business 10 200 FCFA/mois via SasPay Mobile Money.')}
-              className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition"
+              onClick={() => navigate('/paiement?plan=business&cycle=mensuel&montant=10200&type=abonnement')}
+              className="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition cursor-pointer"
             >
               ⚡ Passer au Plan Business (10 200 FCFA/mois) →
             </button>

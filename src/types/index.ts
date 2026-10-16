@@ -1,4 +1,46 @@
-export type UserRole = 'admin' | 'agence' | 'ecommercant' | 'livreur' | 'merchant' | 'agency' | 'driver';
+export type UserRole = 'admin' | 'agence' | 'ecommercant' | 'livreur' | 'merchant' | 'agency' | 'driver' | 'super_admin';
+
+export type AdminRole = 'super_admin' | 'admin' | 'support';
+
+export type AdminPermission =
+  | 'agences:read'
+  | 'agences:write'
+  | 'agences:delete'
+  | 'paiements:read'
+  | 'paiements:write'
+  | 'colis:read'
+  | 'colis:write'
+  | 'livreurs:read'
+  | 'livreurs:write'
+  | 'ecommercants:read'
+  | 'ecommercants:write'
+  | 'analytics:read'
+  | 'config:write'
+  | 'support:write';
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  nom: string;
+  role: AdminRole;
+  permissions: AdminPermission[];
+  actif: boolean;
+  dateCreation: string;
+  dateDerniereConnexion: string;
+}
+
+export interface PlatformConfig {
+  id: string;
+  nomPlateforme: string;
+  tauxCommissionDefaut: number;
+  fraisLivraisonDefaut: number;
+  saspayClientId?: string;
+  saspayMode?: 'test' | 'live';
+  canalWhatsAppActif: boolean;
+  smsGatewayActif: boolean;
+  modeMaintenance: boolean;
+  devisePrincipale: string;
+}
 
 export interface UserProfile {
   uid: string;

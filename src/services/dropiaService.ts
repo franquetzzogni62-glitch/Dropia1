@@ -287,6 +287,19 @@ export class DropiaDatabaseService {
   }
 
   /**
+   * Met à jour partiellement le profil utilisateur
+   */
+  static async updateUserProfile(uid: string, updates: Partial<UserProfile>): Promise<void> {
+    try {
+      const sanitized = sanitizeForFirestore(updates);
+      await setDoc(doc(db, 'users', uid), sanitized, { merge: true });
+    } catch (err) {
+      handleFirestoreError(err, OperationType.WRITE, `users/${uid}`);
+      throw err;
+    }
+  }
+
+  /**
    * Récupère la liste de toutes les agences disponibles (pour sélection e-commerçant)
    */
   static async getAgences(): Promise<Agence[]> {

@@ -117,7 +117,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         <div className="text-center space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Dropia SaaS • Mode Production</span>
+            <span>Dropia • Mode Production</span>
           </div>
           <h2 className="text-xl font-black text-slate-900 tracking-tight">
             {mode === 'login' ? 'Connexion Sécurisée' : 'Créer un Compte Opérationnel'}

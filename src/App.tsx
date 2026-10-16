@@ -23,6 +23,8 @@ import RegisterEcommercant from './pages/RegisterEcommercant';
 import RegisterEcommercantPage from './pages/RegisterEcommercantPage';
 import Ecommercants from './pages/Ecommercants';
 import PortailEcommercant from './pages/PortailEcommercant';
+import AdminPortal from './pages/AdminPortal';
+import PaiementPage from './pages/PaiementPage';
 
 import { DropiaDatabaseService } from './services/dropiaService';
 import { DropiaAuthService } from './services/authService';
@@ -359,7 +361,7 @@ export default function App() {
         colisCount={colisList.length}
         livreursCount={livreursList.length}
         userProfile={userProfile}
-        onOpenRecharge={() => setShowRechargeModal(true)}
+        onOpenRecharge={() => navigate('/paiement?montant=20000&type=recharge')}
         onOpenLanding={() => navigate('/')}
       />
 
@@ -384,7 +386,7 @@ export default function App() {
               onOpenDrivers={() => setActiveTab('drivers')}
               onOpenWhatsApp={() => setActiveTab('settings')}
               onOpenSettings={() => setActiveTab('settings')}
-              onOpenRecharge={() => setShowRechargeModal(true)}
+              onOpenRecharge={() => navigate('/paiement?montant=20000&type=recharge')}
               onOpenOrders={() => setActiveTab('orders')}
               onRefresh={() => showToast('Données opérationnelles actualisées.')}
             />
@@ -432,7 +434,7 @@ export default function App() {
             <WalletView
               walletBalance={walletBalance}
               transactionsList={transactionsList}
-              onOpenRecharge={() => setShowRechargeModal(true)}
+              onOpenRecharge={() => navigate('/paiement?montant=20000&type=recharge')}
               onRefresh={() => showToast('Mouvements financiers synchronisés.')}
             />
           )}
@@ -496,6 +498,13 @@ export default function App() {
           }
         }} />} />
 
+        {/* 0. Espace Super Administrateur Dropia */}
+        <Route path="/admin" element={<AdminPortal />} />
+        <Route path="/admin/*" element={<AdminPortal />} />
+
+        {/* Page de paiement centralisée Mobile Money */}
+        <Route path="/paiement" element={<PaiementPage />} />
+
         {/* Route Connexion directe /login */}
         <Route
           path="/login"
@@ -508,7 +517,9 @@ export default function App() {
                 onAuthSuccess={(profile) => {
                   setUserProfile(profile);
                   setCurrentUser({ uid: profile.uid, email: profile.email, displayName: profile.nom });
-                  if (profile.role === 'ecommercant') {
+                  if (profile.role === 'admin' || profile.email === 'franquetzzogni6@gmail.com') {
+                    navigate('/admin');
+                  } else if (profile.role === 'ecommercant') {
                     navigate('/portail');
                   } else {
                     navigate('/dashboard');

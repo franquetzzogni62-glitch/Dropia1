@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   RefreshCw,
   Plus,
@@ -26,6 +27,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
   onOpenRecharge,
   onRefresh
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       {/* Title & Actions */}
@@ -53,8 +55,8 @@ export const WalletView: React.FC<WalletViewProps> = ({
             Actualiser
           </button>
           <button
-            onClick={onOpenRecharge}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs"
+            onClick={() => navigate('/paiement?montant=20000&type=recharge')}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Recharger via Mobile Money
@@ -80,8 +82,8 @@ export const WalletView: React.FC<WalletViewProps> = ({
 
           <div className="flex flex-col sm:flex-row gap-2">
             <button
-              onClick={onOpenRecharge}
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20"
+              onClick={() => navigate('/paiement?montant=20000&type=recharge')}
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer"
             >
               + Approvisionner mon solde
             </button>
@@ -126,8 +128,8 @@ export const WalletView: React.FC<WalletViewProps> = ({
                       </p>
                     </div>
                     <button
-                      onClick={onOpenRecharge}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-xs"
+                      onClick={() => navigate('/paiement?montant=20000&type=recharge')}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs shadow-xs cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
                       Effectuer un premier rechargement
@@ -144,7 +146,7 @@ export const WalletView: React.FC<WalletViewProps> = ({
                       {t.type.replace('_', ' ')}
                     </td>
                     <td className="py-3 px-3 text-slate-600">
-                      {t.referencePaiement || t.referenceColis || 'Paiement SasPay'}
+                      {t.referencePaiement || t.referenceColis || 'Paiement Mobile Money'}
                     </td>
                     <td className="py-3 px-3 text-slate-500 text-[11px]">
                       {new Date(t.date).toLocaleDateString('fr-FR', {

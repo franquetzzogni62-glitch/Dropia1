@@ -78,6 +78,15 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           Site Public
         </button>
 
+        {/* Console Admin Dropia */}
+        <a
+          href="/admin"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-300 bg-blue-50/80 hover:bg-blue-100 text-[#1E40AF] transition font-bold text-[11px]"
+        >
+          <ShieldCheck className="w-3.5 h-3.5 text-[#1E40AF]" strokeWidth={1.75} />
+          <span>Console Admin</span>
+        </a>
+
         {/* PWA Livreur Mobile Link */}
         <button
           onClick={onOpenPwa}
@@ -97,7 +106,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <span>Purger données test</span>
         </button>
 
-        {/* Guide SaaS & Aide Button */}
+        {/* Guide Plateforme & Aide Button */}
         <button
           onClick={onOpenGuide}
           className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition font-medium text-[11px]"
