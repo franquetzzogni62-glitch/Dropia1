@@ -371,10 +371,7 @@ export default function App() {
         <TopHeader
           userProfile={userProfile}
           onOpenGuide={() => setActiveTab('settings')}
-          onOpenPwa={() => setShowPwaDriverModal(true)}
-          onOpenLanding={() => navigate('/')}
           onLogout={handleLogout}
-          onPurgeDatabase={() => setShowConfirmPurge(true)}
         />
 
         {/* Dynamic Content Views */}

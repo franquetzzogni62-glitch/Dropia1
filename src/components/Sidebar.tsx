@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Package,
@@ -51,6 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenRecharge,
   onOpenLanding
 }) => {
+  const navigate = useNavigate();
   const menuItems: Array<{ key: TabKey; label: string; icon: React.ReactNode; badge?: number }> = [
     { key: 'dashboard', label: 'Tableau de bord', icon: <LayoutDashboard className="w-4 h-4" /> },
     { key: 'orders', label: 'Commandes', icon: <Package className="w-4 h-4" /> },
@@ -151,8 +153,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <p className="text-[9px] text-slate-500">Disponible pour vos livraisons et retraits</p>
           <button
-            onClick={onOpenRecharge}
-            className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] transition shadow"
+            onClick={() => navigate('/paiement?type=recharge&montant=10000')}
+            className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] transition shadow cursor-pointer"
           >
             Recharger le portefeuille
           </button>

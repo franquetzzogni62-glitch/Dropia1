@@ -159,7 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           }`}
         >
           <CreditCard className="w-4 h-4" />
-          Abonnements & SasPay
+          Abonnements & Facturation
         </button>
 
         <button

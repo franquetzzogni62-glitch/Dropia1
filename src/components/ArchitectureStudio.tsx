@@ -31,7 +31,7 @@ export const ArchitectureStudio: React.FC = () => {
 -- Extension UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. Table des Agences 3PL (Abonnements SaaS & Hubs)
+-- 1. Table des Agences 3PL (Abonnements & Hubs)
 CREATE TABLE IF NOT EXISTS agences (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     nom VARCHAR(255) NOT NULL,

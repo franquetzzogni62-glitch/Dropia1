@@ -35,6 +35,8 @@ export interface PlatformConfig {
   tauxCommissionDefaut: number;
   fraisLivraisonDefaut: number;
   saspayClientId?: string;
+  saspayApiKey?: string;
+  saspayClientSecret?: string;
   saspayMode?: 'test' | 'live';
   canalWhatsAppActif: boolean;
   smsGatewayActif: boolean;

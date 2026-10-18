@@ -126,8 +126,42 @@ export async function handleSaspayRequest(
       return true;
     }
 
+    const apiKey = body.apiKey || (req.headers['authorization'] || '').replace('Bearer ', '') || process.env.SASPAY_SECRET_KEY || process.env.SASPAY_API_KEY || '';
     const txId = `sas_tx_${Math.floor(1000 + Math.random() * 9000)}`;
     const refSas = `SAS-${body.operateur.toUpperCase()}-${Math.floor(10000000 + Math.random() * 90000000)}`;
+    let paymentUrl = `https://checkout.saspay.me/pay/${refSas}?amount=${body.montant}&phone=${encodeURIComponent(body.telephone)}&operator=${body.operateur}`;
+    let isLiveConnected = false;
+
+    if (apiKey && apiKey.trim().length > 5) {
+      try {
+        const liveRes = await fetch('https://api.saspay.me/api/v1/checkout-sessions/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey.trim()}`
+          },
+          body: JSON.stringify({
+            amount: Number(body.montant),
+            currency: 'XOF',
+            phone: body.telephone,
+            operator: body.operateur.toUpperCase(),
+            description: body.description || 'Paiement Dropia',
+            return_url: body.returnUrl || '',
+            cancel_url: body.returnUrl || ''
+          })
+        });
+
+        if (liveRes.ok) {
+          const liveData: any = await liveRes.json();
+          if (liveData.checkout_url || liveData.payment_url || liveData.url) {
+            paymentUrl = liveData.checkout_url || liveData.payment_url || liveData.url;
+            isLiveConnected = true;
+          }
+        }
+      } catch (e) {
+        // Fallback to generated checkout URL
+      }
+    }
 
     const newTx: SaspayTransaction = {
       id: txId,
@@ -144,7 +178,6 @@ export async function handleSaspayRequest(
 
     transactionsSaspayStore.set(txId, newTx);
 
-    // Simulate direct OTP or instant push for demo
     sendJson(res, 201, {
       success: true,
       transactionId: txId,
@@ -153,8 +186,9 @@ export async function handleSaspayRequest(
       devise: 'XOF',
       operateur: newTx.operateur,
       statut: 'PENDING',
-      paymentUrl: `https://checkout.saspay.me/pay/${refSas}`,
-      instructions: `Un prompt USSD/Push a été envoyé au numéro ${newTx.telephone} sur le réseau ${newTx.operateur.toUpperCase()}.`
+      paymentUrl,
+      isLiveConnected,
+      instructions: `Demande de débit Mobile Money initiée pour le numéro ${newTx.telephone} sur le réseau ${newTx.operateur.toUpperCase()}.`
     });
     return true;
   }

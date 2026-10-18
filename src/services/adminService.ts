@@ -467,6 +467,7 @@ export class DropiaAdminService {
       tauxCommissionDefaut: 12,
       fraisLivraisonDefaut: 2000,
       saspayClientId: 'sp_live_dropia_main',
+      saspayApiKey: '',
       saspayMode: 'live',
       canalWhatsAppActif: true,
       smsGatewayActif: true,
@@ -530,3 +531,6 @@ export class DropiaAdminService {
     );
   }
 }
+
+export const AdminService = DropiaAdminService;
+

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   HelpCircle,
@@ -37,6 +38,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenAuth,
   onOpenDriverApp
 }) => {
+  const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [trackingInput, setTrackingInput] = useState('');
   const [showTrackingResult, setShowTrackingResult] = useState(false);
@@ -591,8 +593,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             <button
-              onClick={() => onOpenAuth('register')}
-              className="w-full py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-900 font-bold text-xs transition"
+              onClick={() => navigate('/paiement?plan=starter&cycle=mensuel&montant=0&type=abonnement')}
+              className="w-full py-3 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-900 font-bold text-xs transition cursor-pointer"
             >
               Démarrer 30 jours gratuits
             </button>
@@ -658,10 +660,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             <button
-              onClick={() => onOpenAuth('register')}
-              className="w-full py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-lg shadow-emerald-700/25"
+              onClick={() => navigate(`/paiement?plan=pro&cycle=${billingCycle === 'monthly' ? 'mensuel' : 'annuel'}&montant=${billingCycle === 'monthly' ? 5500 : 55000}&type=abonnement`)}
+              className="w-full py-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-lg shadow-emerald-700/25 cursor-pointer"
             >
-              Choisir le Plan Pro (30j d'essai)
+              Choisir le Plan Pro ({billingCycle === 'monthly' ? '5 500 FCFA' : '55 000 FCFA'})
             </button>
           </div>
 
@@ -721,20 +723,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </div>
 
             <button
-              onClick={() => onOpenAuth('register')}
-              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition"
+              onClick={() => navigate(`/paiement?plan=business&cycle=${billingCycle === 'monthly' ? 'mensuel' : 'annuel'}&montant=${billingCycle === 'monthly' ? 10200 : 102000}&type=abonnement`)}
+              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer"
             >
-              Souscrire au Plan Business
+              Souscrire au Plan Business ({billingCycle === 'monthly' ? '10 200 FCFA' : '102 000 FCFA'})
             </button>
           </div>
         </div>
 
-        {/* SasaPay Mobile Money Banner */}
+        {/* Mobile Money Banner */}
         <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center md:text-left">
             <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2 justify-center md:justify-start">
               <Wallet className="w-4 h-4 text-emerald-600" />
-              <span>Paiement 100% Mobile Money via SasaPay</span>
+              <span>Paiement 100% Mobile Money Sécurisé</span>
             </h4>
             <p className="text-xs text-slate-500">
               Disponible instantanément dans 19 pays d'Afrique : Sénégal, Côte d'Ivoire, Cameroun, Mali, Bénin, Guinée, Togo, Burkina Faso, Kenya, RDC, etc.

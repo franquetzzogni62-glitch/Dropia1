@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CreditCard,
   Check,
@@ -23,6 +24,7 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
   agence,
   onPlanUpgrade
 }) => {
+  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<'starter' | 'pro' | 'business'>(agence.plan);
   const [phone, setPhone] = useState('+225 07 48 99 00 11');
   const [operator, setOperator] = useState<'wave' | 'orange' | 'mtn' | 'moov'>('wave');
@@ -156,7 +158,7 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
       <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/80 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">
-            Abonnement SaaS Agence 3PL
+            Abonnement Agence Dropia
           </span>
           <div className="flex items-center gap-3 mt-1">
             <h2 className="text-xl font-bold text-white">
@@ -195,9 +197,9 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
       {/* Pricing Cards */}
       <div>
         <div className="text-center max-w-xl mx-auto mb-6">
-          <h3 className="text-xl font-black text-white">Nos Formules d'Abonnement SaaS</h3>
+          <h3 className="text-xl font-black text-white">Nos Formules d'Abonnement</h3>
           <p className="text-xs text-slate-400 mt-1">
-            Réglez facilement en Francs CFA via Wave, Orange Money, MTN MoMo ou Moov Money grâce à la passerelle SasPay.
+            Réglez facilement en Francs CFA via Wave, Orange Money, MTN MoMo ou Moov Money.
           </p>
         </div>
 
@@ -251,16 +253,22 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
                   </ul>
                 </div>
 
-                <button
-                  type="button"
-                  className={`w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
-                    isSelected
-                      ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20'
-                      : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-                  }`}
-                >
-                  {isCurrent ? 'Plan Actif' : 'Sélectionner ce Plan'}
-                </button>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/paiement?plan=${p.id}&cycle=mensuel&montant=${p.price}&type=abonnement`);
+                    }}
+                    className={`w-full py-2.5 rounded-xl font-bold text-xs transition flex items-center justify-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg shadow-amber-500/20'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                    }`}
+                  >
+                    {isCurrent ? 'Renouveler ce Plan' : 'Payer & Activer ce Plan'}
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -276,10 +284,10 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
             </div>
             <div>
               <h4 className="font-bold text-white text-base">
-                Passerelle SasPay : Paiement Mobile Money Direct
+                Passerelle de Paiement : Mobile Money Direct
               </h4>
               <p className="text-xs text-slate-400">
-                Traitement sécurisé côté serveur avec clé secrète et notification Webhook en temps réel.
+                Traitement sécurisé avec validation instantanée par notification USSD / Mobile Money.
               </p>
             </div>
           </div>
@@ -358,7 +366,7 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
                     En attente de confirmation Mobile Money...
                   </div>
                   <p className="text-[11px] text-slate-400">
-                    Réf SasPay: <code className="text-amber-400">{transactionInfo?.reference}</code>
+                    Réf Paiement: <code className="text-amber-400">{transactionInfo?.reference}</code>
                   </p>
                 </div>
               )}
@@ -377,7 +385,7 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
 
               {paymentState === 'failed' && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
-                  Échec de l'initialisation. Vérifiez la connexion au serveur SasPay.
+                  Échec de l'initialisation. Vérifiez la connexion au service de paiement.
                 </div>
               )}
             </div>
@@ -385,11 +393,11 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
             <button
               onClick={handleInitiatePayment}
               disabled={paymentState === 'loading' || paymentState === 'pending'}
-              className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-black text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-950 font-black text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer"
             >
               <Zap className="w-4 h-4" />
               {paymentState === 'loading'
-                ? 'Connexion SasPay...'
+                ? 'Connexion sécurisée...'
                 : paymentState === 'pending'
                 ? 'Validation en cours...'
                 : `Payer avec ${operator.toUpperCase()} (${plans.find(p => p.id === selectedPlan)?.price.toLocaleString('fr-FR')} FCFA)`}
@@ -401,11 +409,11 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
         <div className="pt-4 border-t border-slate-800 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Historique des Transactions SasPay Récentes
+              Historique des Transactions Mobile Money Récentes
             </span>
             <button
               onClick={fetchTransactions}
-              className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-medium"
+              className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1 font-medium cursor-pointer"
             >
               <RefreshCw className="w-3 h-3" />
               Actualiser
@@ -416,7 +424,7 @@ export const SaasBillingModule: React.FC<SaasBillingModuleProps> = ({
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/60 uppercase text-[10px] text-slate-500 font-semibold">
                 <tr>
-                  <th className="py-2 px-3">Réf SasPay</th>
+                  <th className="py-2 px-3">Réf. Transaction</th>
                   <th className="py-2 px-3">Opérateur</th>
                   <th className="py-2 px-3">Téléphone</th>
                   <th className="py-2 px-3">Montant (FCFA)</th>

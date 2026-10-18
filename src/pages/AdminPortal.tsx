@@ -1258,8 +1258,19 @@ export default function AdminPortal() {
               </div>
 
               <div className="pt-2 border-t border-slate-100 space-y-3">
-                <h4 className="font-bold text-slate-900 text-xs">Passerelle de Paiement & Notifications</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-slate-900 text-xs">Passerelle de Paiement Mobile Money (SasPay)</h4>
+                  <a
+                    href="https://docs.saspay.me/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11px] text-[#1E40AF] hover:underline font-semibold flex items-center gap-1"
+                  >
+                    Documentation API SasPay ↗
+                  </a>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-slate-700 font-bold mb-1">
                       Identifiant Passerelle (Client ID)
@@ -1270,7 +1281,23 @@ export default function AdminPortal() {
                       onChange={(e) =>
                         setPlatformConfig({ ...platformConfig, saspayClientId: e.target.value })
                       }
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-[#1E40AF] font-mono"
+                      placeholder="sp_live_..."
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-[#1E40AF] font-mono text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-bold mb-1">
+                      Clé Secrète API SasPay (Secret Key)
+                    </label>
+                    <input
+                      type="password"
+                      value={platformConfig.saspayApiKey || ''}
+                      onChange={(e) =>
+                        setPlatformConfig({ ...platformConfig, saspayApiKey: e.target.value })
+                      }
+                      placeholder="sk_live_... ou sk_test_..."
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-[#1E40AF] font-mono text-xs"
                     />
                   </div>
 
@@ -1286,13 +1313,16 @@ export default function AdminPortal() {
                           saspayMode: e.target.value as 'test' | 'live'
                         })
                       }
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-[#1E40AF]"
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:border-[#1E40AF] text-xs"
                     >
-                      <option value="live">Mode Production (Live)</option>
+                      <option value="live">Mode Production (Live Mobile Money)</option>
                       <option value="test">Mode Bac à sable (Test)</option>
                     </select>
                   </div>
                 </div>
+                <p className="text-[11px] text-slate-500">
+                  Renseignez votre clé d'API SasPay pour déduire les débits réels Mobile Money (Wave, Orange, MTN, Moov) et activer les redirections vers le paiement sécurisé SasPay (<a href="https://docs.saspay.me/" target="_blank" rel="noreferrer" className="text-[#1E40AF] underline">docs.saspay.me</a>).
+                </p>
 
                 <div className="flex items-center gap-6 pt-2">
                   <label className="flex items-center gap-2 cursor-pointer">

@@ -88,13 +88,13 @@ export const DeveloperApiConsole: React.FC<DeveloperApiConsoleProps> = ({
       body: JSON.stringify({ cle: 'dp_live_8f3a981240184bba' }, null, 2)
     },
     {
-      label: 'Statut Passerelle SasPay',
+      label: 'Statut Passerelle Mobile Money',
       method: 'GET' as const,
       url: '/api/saspay/health',
       body: ''
     },
     {
-      label: 'Transactions SasPay (Mobile Money)',
+      label: 'Transactions Mobile Money',
       method: 'GET' as const,
       url: '/api/saspay/transactions',
       body: ''

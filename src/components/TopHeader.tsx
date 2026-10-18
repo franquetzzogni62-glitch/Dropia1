@@ -1,32 +1,23 @@
 import React from 'react';
 import {
   HelpCircle,
-  Sparkles,
-  Bell,
-  Smartphone,
-  ExternalLink,
-  LogOut,
-  Trash2,
-  ShieldCheck
+  LogOut
 } from 'lucide-react';
 import type { UserProfile } from '../types';
 
 interface TopHeaderProps {
   userProfile: UserProfile | null;
   onOpenGuide: () => void;
-  onOpenPwa: () => void;
-  onOpenLanding: () => void;
+  onOpenPwa?: () => void;
+  onOpenLanding?: () => void;
   onLogout: () => void;
-  onPurgeDatabase: () => void;
+  onPurgeDatabase?: () => void;
 }
 
 export const TopHeader: React.FC<TopHeaderProps> = ({
   userProfile,
   onOpenGuide,
-  onOpenPwa,
-  onOpenLanding,
-  onLogout,
-  onPurgeDatabase
+  onLogout
 }) => {
   const displayName = userProfile?.nomBoutique || userProfile?.nom || 'Dropia Utilisateur';
   const displayCity = userProfile?.ville || 'Dakar';
@@ -69,47 +60,10 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
 
       {/* Action Tools & Badges */}
       <div className="flex items-center gap-3 text-xs">
-        {/* Toggle to Landing Page */}
-        <button
-          onClick={onOpenLanding}
-          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition font-medium text-[11px]"
-        >
-          <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-          Site Public
-        </button>
-
-        {/* Console Admin Dropia */}
-        <a
-          href="/admin"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-300 bg-blue-50/80 hover:bg-blue-100 text-[#1E40AF] transition font-bold text-[11px]"
-        >
-          <ShieldCheck className="w-3.5 h-3.5 text-[#1E40AF]" strokeWidth={1.75} />
-          <span>Console Admin</span>
-        </a>
-
-        {/* PWA Livreur Mobile Link */}
-        <button
-          onClick={onOpenPwa}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-blue-700 transition font-medium text-[11px]"
-        >
-          <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-          <span>App Livreur (PWA)</span>
-        </button>
-
-        {/* Purge Fictitious Data Button */}
-        <button
-          onClick={onPurgeDatabase}
-          title="Nettoyer les données fictives de la base"
-          className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-rose-200 bg-rose-50/70 hover:bg-rose-100 text-rose-700 transition font-medium text-[11px]"
-        >
-          <Trash2 className="w-3.5 h-3.5 text-rose-600" />
-          <span>Purger données test</span>
-        </button>
-
         {/* Guide Plateforme & Aide Button */}
         <button
           onClick={onOpenGuide}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition font-medium text-[11px]"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transition font-medium text-[11px] cursor-pointer"
         >
           <HelpCircle className="w-3.5 h-3.5" />
           Guide & Aide
@@ -118,7 +72,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         {/* Logout Button */}
         <button
           onClick={onLogout}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 transition font-semibold text-[11px]"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-300 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 transition font-semibold text-[11px] cursor-pointer"
           title="Se déconnecter"
         >
           <LogOut className="w-3.5 h-3.5" />
