@@ -77,6 +77,32 @@ export default function PaiementPage() {
     return () => clearTimeout(timer);
   }, [etape, modePaiement, autoRedirect, paymentUrl, countdown]);
 
+  // Polling automatique du statut SasPay pendant l'attente
+  useEffect(() => {
+    if (etape !== 'attente' || !transactionId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/saspay/status/${encodeURIComponent(transactionId)}`);
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.status === 'SUCCESS' || resData.data?.status === 'SUCCESS') {
+            clearInterval(interval);
+            await finaliserPaiementApresSaspay();
+          } else if (resData.status === 'FAILED' || resData.data?.status === 'FAILED') {
+            clearInterval(interval);
+            setErreur('Le paiement a été rejeté ou a échoué sur le réseau Mobile Money.');
+            setEtape('erreur');
+          }
+        }
+      } catch (e) {
+        console.warn('Poll status error:', e);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [etape, transactionId]);
+
   // Finalisation automatique après paiement
   const finaliserPaiementApresSaspay = async () => {
     setLoading(true);
@@ -152,6 +178,8 @@ export default function PaiementPage() {
           type,
           planId,
           cycle,
+          mode: modePaiement === 'push' ? 'softpay' : 'checkout',
+          preferSoftpay: modePaiement === 'push',
           description: type === 'abonnement'
             ? `Abonnement Dropia Forfait ${planId.toUpperCase()} (${cycle})`
             : `Rechargement Portefeuille Dropia (${montant.toLocaleString('fr-FR')} FCFA)`,
@@ -162,24 +190,39 @@ export default function PaiementPage() {
         })
       });
 
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Échec de la connexion à la passerelle SasPay.');
+      let data: any = null;
+      try {
+        const text = await res.text();
+        if (text && text.trim().startsWith('{')) {
+          data = JSON.parse(text);
+        }
+      } catch (e) {
+        console.warn('SasPay create-payment response text:', e);
       }
 
-      setReference(data.reference || `SAS-${Date.now()}`);
-      setPaymentUrl(data.paymentUrl || `https://checkout.saspay.me/pay/${data.reference}`);
-      setTransactionId(data.transactionId || '');
+      if (!data || !data.success) {
+        const errDetail = data?.error?.message || (typeof data?.error === 'string' ? data.error : JSON.stringify(data?.error || {})) || 'Erreur lors de l\'initialisation SasPay.';
+        throw new Error(errDetail);
+      }
+
+      const checkoutLink = data.checkoutUrl || data.paymentUrl || '';
+      const txRef = data.reference || data.sessionId || data.paymentId || `SAS-${Date.now()}`;
+      const txId = data.sessionId || data.paymentId || data.reference || '';
+
+      setReference(txRef);
+      setPaymentUrl(checkoutLink);
+      setTransactionId(txId);
       setIsLiveConnected(!!data.isLiveConnected);
       setInstructions(data.instructions || '');
 
       setEtape('attente');
-      setCountdown(3);
+      setCountdown(2);
 
-      // Si mode direct redirection activé sans délai, on peut rediriger tout de suite
-      if (modePaiement === 'redirect' && autoRedirect && data.paymentUrl) {
-        // Le countdown effectuera la redirection, ou l'utilisateur peut cliquer immédiatement
+      // Si mode redirection et checkout URL fourni, rediriger directement
+      if (modePaiement === 'redirect' && autoRedirect && checkoutLink) {
+        setTimeout(() => {
+          window.location.href = checkoutLink;
+        }, 1200);
       }
     } catch (err: any) {
       setErreur(err.message || 'Impossible d\'initier le paiement avec SasPay.');

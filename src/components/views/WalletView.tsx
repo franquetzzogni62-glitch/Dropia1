@@ -10,9 +10,11 @@ import {
   Calendar,
   CheckCircle2,
   Globe,
-  Clock
+  Clock,
+  ArrowUpCircle
 } from 'lucide-react';
 import type { TransactionFinanciere } from '../../types';
+import { RetraitModal } from '../modals/RetraitModal';
 
 interface WalletViewProps {
   walletBalance: number;
@@ -28,6 +30,8 @@ export const WalletView: React.FC<WalletViewProps> = ({
   onRefresh
 }) => {
   const navigate = useNavigate();
+  const [showRetraitModal, setShowRetraitModal] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Title & Actions */}
@@ -38,21 +42,28 @@ export const WalletView: React.FC<WalletViewProps> = ({
               Portefeuille & Finances (FCFA)
             </h1>
             <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
-              ● Mode Production
+              ● Mode Production SasPay
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Gérez vos rechargements Mobile Money et vos reversements de Cash on Delivery (COD).
+            Gérez vos dépôts Mobile Money, retraits par virement direct et reversements COD.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
             onClick={onRefresh}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Actualiser
+          </button>
+          <button
+            onClick={() => setShowRetraitModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer"
+          >
+            <ArrowUpRight className="w-4 h-4 text-blue-600" />
+            Demander un Retrait
           </button>
           <button
             onClick={() => navigate('/paiement?montant=20000&type=recharge')}
@@ -76,20 +87,39 @@ export const WalletView: React.FC<WalletViewProps> = ({
               <span className="text-xl font-normal text-slate-300">FCFA</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
-              Fonds immédiatement disponibles pour couvrir vos frais de livraison et décharges livreurs.
+              Fonds immédiatement disponibles pour couvrir vos frais de livraison ou être retirés vers votre Mobile Money.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <button
+              onClick={() => setShowRetraitModal(true)}
+              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <ArrowUpRight className="w-3.5 h-3.5 text-blue-400" />
+              Retirer vers Mobile Money
+            </button>
             <button
               onClick={() => navigate('/paiement?montant=20000&type=recharge')}
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center justify-center gap-1.5"
             >
+              <Plus className="w-4 h-4" />
               + Approvisionner mon solde
             </button>
           </div>
         </div>
       </div>
+
+      {/* Retrait Modal */}
+      {showRetraitModal && (
+        <RetraitModal
+          maxBalance={walletBalance}
+          onClose={() => setShowRetraitModal(false)}
+          onSuccess={() => {
+            onRefresh();
+          }}
+        />
+      )}
 
       {/* Transactions Table */}
       <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">

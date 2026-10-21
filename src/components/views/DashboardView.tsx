@@ -93,54 +93,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Actualiser
           </button>
           <button
-            onClick={() => navigate(`/paiement?plan=${userProfile?.plan || 'pro'}&cycle=mensuel&montant=5500&type=abonnement`)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold transition shadow-2xs cursor-pointer"
-          >
-            <Zap className="w-3.5 h-3.5 text-amber-600" />
-            Renouveler Forfait
-          </button>
-          <button
             onClick={onOpenNewOrder}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Nouvelle Commande
-          </button>
-        </div>
-      </div>
-
-      {/* Subscription Renewal Alert & Mobile Money banner */}
-      <div className="rounded-xl bg-gradient-to-r from-amber-50 via-white to-amber-50/40 border border-amber-200 p-4 shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
-            <Zap className="w-5 h-5 text-amber-600" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-900 text-xs">Formule Agence • {displayPlan}</span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
-                Renouvellement Mobile Money
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Paiement direct sécurisé via Wave, Orange Money, MTN MoMo ou Moov Money.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate('/paiement?type=recharge&montant=10000')}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition cursor-pointer"
-          >
-            Recharger portefeuille
-          </button>
-          <button
-            onClick={() => navigate(`/paiement?plan=${userProfile?.plan || 'pro'}&cycle=mensuel&montant=5500&type=abonnement`)}
-            className="px-3.5 py-1.5 rounded-lg bg-[#1E40AF] hover:bg-blue-800 text-white font-bold text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
-          >
-            <span>Renouveler mon plan</span>
-            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

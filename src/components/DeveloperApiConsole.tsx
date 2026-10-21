@@ -132,8 +132,13 @@ export const DeveloperApiConsole: React.FC<DeveloperApiConsoleProps> = ({
       setResponseStatus(res.status);
       setResponseTime(elapsed);
 
-      const data = await res.json();
-      setResponseJson(JSON.stringify(data, null, 2));
+      const text = await res.text();
+      try {
+        const data = JSON.parse(text);
+        setResponseJson(JSON.stringify(data, null, 2));
+      } catch {
+        setResponseJson(text);
+      }
     } catch (err: any) {
       const elapsed = Math.round(performance.now() - start);
       setResponseStatus(500);

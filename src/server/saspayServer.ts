@@ -1,55 +1,24 @@
 import type { IncomingMessage, ServerResponse } from 'http';
+import crypto from 'crypto';
 
-interface SaspayTransaction {
-  id: string;
-  orderId: string;
-  montant: number;
-  devise: string;
-  telephone: string;
-  operateur: 'wave' | 'orange' | 'mtn' | 'moov';
-  statut: 'PENDING' | 'SUCCESS' | 'FAILED';
-  dateCreation: string;
-  dateConfirmation?: string;
-  description: string;
-  referenceSaspay: string;
+export interface SaspayCheckoutResponse {
+  success: boolean;
+  checkoutUrl: string;
+  paymentUrl: string;
+  sessionId: string;
+  reference: string;
+  amount: string;
+  currency: string;
+  status: string;
+  isLiveConnected: boolean;
+  instructions?: string;
+  error?: string;
 }
 
-const transactionsSaspayStore: Map<string, SaspayTransaction> = new Map([
-  [
-    'sas_tx_9012',
-    {
-      id: 'sas_tx_9012',
-      orderId: 'DP-CI-849201',
-      montant: 28500,
-      devise: 'XOF',
-      telephone: '+2250708123456',
-      operateur: 'wave',
-      statut: 'SUCCESS',
-      dateCreation: new Date(Date.now() - 3600000 * 3).toISOString(),
-      dateConfirmation: new Date(Date.now() - 3600000 * 2).toISOString(),
-      description: 'Paiement COD Colis Wax & Chic',
-      referenceSaspay: 'SAS-WAVE-89312891'
-    }
-  ],
-  [
-    'sas_tx_9013',
-    {
-      id: 'sas_tx_9013',
-      orderId: 'ABONNEMENT-STARTER-400',
-      montant: 15000,
-      devise: 'XOF',
-      telephone: '+2250544991122',
-      operateur: 'orange',
-      statut: 'SUCCESS',
-      dateCreation: new Date(Date.now() - 3600000 * 24).toISOString(),
-      dateConfirmation: new Date(Date.now() - 3600000 * 24 + 120000).toISOString(),
-      description: 'Abonnement SaaS Agence Starter',
-      referenceSaspay: 'SAS-OM-38291044'
-    }
-  ]
-]);
+const SASPAY_BASE_URL = 'https://api.saspay.me/api/v1';
+const LIVE_SECRET_KEY = process.env.SASPAY_SECRET_KEY || process.env.SASPAY_API_KEY || 'sk_live_oEya7mwHkkL7odLN1tcNSO_PrxwoFNx9pIu0h95RyLI';
 
-function parseBody(req: IncomingMessage): Promise<any> {
+function parseBody(req: IncomingMessage): Promise<{ raw: string; json: any }> {
   return new Promise((resolve) => {
     let body = '';
     req.on('data', (chunk) => {
@@ -57,13 +26,13 @@ function parseBody(req: IncomingMessage): Promise<any> {
     });
     req.on('end', () => {
       try {
-        resolve(body ? JSON.parse(body) : {});
+        resolve({ raw: body, json: body ? JSON.parse(body) : {} });
       } catch {
-        resolve({});
+        resolve({ raw: body, json: {} });
       }
     });
     req.on('error', () => {
-      resolve({});
+      resolve({ raw: '', json: {} });
     });
   });
 }
@@ -73,180 +42,400 @@ function sendJson(res: ServerResponse, statusCode: number, data: any) {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-SasPay-Signature');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-SasPay-Signature, X-SasPay-Key, Idempotency-Key');
   res.end(JSON.stringify(data));
 }
 
-/**
- * Gestionnaire des routes API SasPay (https://docs.saspay.me/)
- * Sécurise l'exécution côté serveur pour les flux Mobile Money en Afrique de l'Ouest
- */
+function inferCountry(phone: string, fallback = 'CI'): string {
+  const clean = phone.replace(/[\s\-\(\)]/g, '');
+  if (clean.startsWith('+225') || clean.startsWith('225')) return 'CI';
+  if (clean.startsWith('+221') || clean.startsWith('221')) return 'SN';
+  if (clean.startsWith('+229') || clean.startsWith('229')) return 'BJ';
+  if (clean.startsWith('+237') || clean.startsWith('237')) return 'CM';
+  if (clean.startsWith('+228') || clean.startsWith('228')) return 'TG';
+  if (clean.startsWith('+226') || clean.startsWith('226')) return 'BF';
+  if (clean.startsWith('+242') || clean.startsWith('242')) return 'CG';
+  if (clean.startsWith('+243') || clean.startsWith('243')) return 'CD';
+  return fallback;
+}
+
+function mapNetworkCode(operator: string, country: string): string {
+  const op = (operator || 'wave').toLowerCase();
+  const c = country.toUpperCase();
+
+  if (op.includes('wave')) {
+    return c === 'SN' ? 'wave_sn' : 'wave_ci';
+  }
+  if (op.includes('orange')) {
+    if (c === 'SN') return 'orange_sn';
+    if (c === 'CM') return 'orange_cm';
+    if (c === 'BF') return 'orange_bf';
+    if (c === 'CD') return 'orange_cd';
+    return 'orange_ci';
+  }
+  if (op.includes('mtn')) {
+    if (c === 'BJ') return 'mtn_bj';
+    if (c === 'CM') return 'mtn_cm';
+    if (c === 'CG') return 'mtn_cg';
+    return 'mtn_ci';
+  }
+  if (op.includes('moov')) {
+    if (c === 'BJ') return 'moov_bj';
+    if (c === 'TG') return 'moov_tg';
+    if (c === 'BF') return 'moov_bf';
+    return 'moov_ci';
+  }
+  if (op.includes('airtel')) {
+    if (c === 'CD') return 'airtel_cd';
+    if (c === 'GA') return 'airtel_ga';
+    return 'airtel_cg';
+  }
+  return `${op}_${c.toLowerCase()}`;
+}
+
 export async function handleSaspayRequest(
   req: IncomingMessage,
   res: ServerResponse
 ): Promise<boolean> {
   const url = req.url || '';
 
-  // Intercepter uniquement les routes /api/saspay/*
   if (!url.startsWith('/api/saspay')) {
     return false;
   }
 
-  // Pre-flight CORS
   if (req.method === 'OPTIONS') {
     sendJson(res, 204, {});
     return true;
   }
 
-  const [path] = url.split('?');
+  const [rawPath, queryString] = url.split('?');
+  const pathname = rawPath.replace(/\/+$/, '') || '/';
+  const query = new URLSearchParams(queryString || '');
 
-  // 1. Healthcheck SasPay
-  if (path === '/api/saspay/health' && req.method === 'GET') {
+  const apiKey = (
+    req.headers['authorization']?.replace(/^Bearer\s+/i, '') ||
+    req.headers['x-saspay-key'] ||
+    LIVE_SECRET_KEY
+  ).toString().trim();
+
+  // 1. Healthcheck
+  if (pathname === '/api/saspay/health' && req.method === 'GET') {
     sendJson(res, 200, {
       success: true,
       service: 'SasPay Gateway Bridge (Dropia)',
-      version: '2.1.0',
+      docs: 'https://docs.saspay.me/',
+      apiEndpoint: SASPAY_BASE_URL,
       status: 'ONLINE',
-      supportedOperators: ['wave', 'orange', 'mtn', 'moov'],
-      currency: 'XOF',
-      configured: true
+      mode: apiKey.startsWith('sk_live') ? 'LIVE_PRODUCTION' : 'TEST_SANDBOX',
+      configuredKey: apiKey.substring(0, 10) + '...' + apiKey.slice(-4),
+      supportedCurrencies: ['XOF', 'XAF', 'GNF', 'USD'],
+      serverPublicIp: '34.34.246.130'
     });
     return true;
   }
 
-  // 2. Initialisation d'un paiement Mobile Money: POST /api/saspay/create-payment
-  if (path === '/api/saspay/create-payment' && req.method === 'POST') {
-    const body = await parseBody(req);
+  // 2. Création d'un paiement (Checkout Hébergé SasPay ou Softpay Push)
+  if (pathname === '/api/saspay/create-payment' && req.method === 'POST') {
+    const { json: body } = await parseBody(req);
+    const montant = Number(body.montant) || 5500;
+    const amountStr = montant.toFixed(2);
+    const telephone = (body.telephone || '').trim();
+    const operateur = (body.operateur || 'wave').toLowerCase();
+    const country = (body.country || inferCountry(telephone)).toUpperCase();
+    const description = body.description || 'Paiement Dropia';
+    const customerName = (body.customerName || 'Client Dropia').trim();
+    const customerEmail = (body.customerEmail || 'client@dropia.com').trim();
+    const returnUrl = body.returnUrl || '';
+    const mode = body.mode || (operateur === 'wave' || body.preferSoftpay ? 'softpay' : 'checkout');
 
-    if (!body.montant || !body.telephone || !body.operateur) {
-      sendJson(res, 400, {
-        success: false,
-        error: 'Champs obligatoires manquants: montant, telephone, operateur'
-      });
-      return true;
-    }
+    // A. Mode Softpay (Débit direct Mobile Money / Push USSD)
+    if (mode === 'softpay') {
+      const networkCode = mapNetworkCode(operateur, country);
+      const idempotencyKey = `dropia_sp_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-    const apiKey = body.apiKey || (req.headers['authorization'] || '').replace('Bearer ', '') || process.env.SASPAY_SECRET_KEY || process.env.SASPAY_API_KEY || '';
-    const txId = `sas_tx_${Math.floor(1000 + Math.random() * 9000)}`;
-    const refSas = `SAS-${body.operateur.toUpperCase()}-${Math.floor(10000000 + Math.random() * 90000000)}`;
-    let paymentUrl = `https://checkout.saspay.me/pay/${refSas}?amount=${body.montant}&phone=${encodeURIComponent(body.telephone)}&operator=${body.operateur}`;
-    let isLiveConnected = false;
-
-    if (apiKey && apiKey.trim().length > 5) {
       try {
-        const liveRes = await fetch('https://api.saspay.me/api/v1/checkout-sessions/', {
+        const softpayRes = await fetch(`${SASPAY_BASE_URL}/payments/softpay/`, {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey.trim()}`
+            'Idempotency-Key': idempotencyKey
           },
           body: JSON.stringify({
-            amount: Number(body.montant),
-            currency: 'XOF',
-            phone: body.telephone,
-            operator: body.operateur.toUpperCase(),
-            description: body.description || 'Paiement Dropia',
-            return_url: body.returnUrl || '',
-            cancel_url: body.returnUrl || ''
+            amount: amountStr,
+            currency: body.currency || 'XOF',
+            country,
+            network: networkCode,
+            description,
+            customer: {
+              first_name: customerName.split(' ')[0] || 'Client',
+              last_name: customerName.split(' ').slice(1).join(' ') || 'Dropia',
+              email: customerEmail,
+              phone: telephone.startsWith('+') ? telephone : `+${telephone}`
+            }
           })
         });
 
-        if (liveRes.ok) {
-          const liveData: any = await liveRes.json();
-          if (liveData.checkout_url || liveData.payment_url || liveData.url) {
-            paymentUrl = liveData.checkout_url || liveData.payment_url || liveData.url;
-            isLiveConnected = true;
-          }
+        const softpayData: any = await softpayRes.json();
+
+        if (softpayRes.ok && softpayData.success) {
+          const pData = softpayData.data || {};
+          sendJson(res, 201, {
+            success: true,
+            mode: 'softpay',
+            paymentId: pData.id,
+            status: pData.status || 'PENDING',
+            checkoutUrl: pData.checkout_url || '',
+            paymentUrl: pData.checkout_url || '',
+            instructions: pData.instructions?.[0] || 'Demande de débit Mobile Money envoyée sur votre téléphone.',
+            reference: pData.id,
+            isLiveConnected: true
+          });
+          return true;
         }
-      } catch (e) {
-        // Fallback to generated checkout URL
+
+        // Si softpay échoue pour ce réseau, basculer proprement sur le checkout hébergé
+      } catch (err: any) {
+        console.warn('Softpay attempt failed, falling back to checkout session:', err.message);
       }
     }
 
-    const newTx: SaspayTransaction = {
-      id: txId,
-      orderId: body.orderId || `ORD-${Date.now()}`,
-      montant: Number(body.montant),
-      devise: 'XOF',
-      telephone: body.telephone,
-      operateur: body.operateur,
-      statut: 'PENDING',
-      dateCreation: new Date().toISOString(),
-      description: body.description || 'Paiement Dropia Mobile Money',
-      referenceSaspay: refSas
-    };
+    // B. Mode Hosted Checkout Session (Redirection officielle SasPay)
+    try {
+      const checkoutRes = await fetch(`${SASPAY_BASE_URL}/checkout-sessions/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          amount: amountStr,
+          currency: body.currency || 'XOF',
+          description,
+          customer_name: customerName,
+          customer_email: customerEmail,
+          customer_phone: telephone,
+          country,
+          return_url: returnUrl
+        })
+      });
 
-    transactionsSaspayStore.set(txId, newTx);
+      const checkoutData: any = await checkoutRes.json();
 
-    sendJson(res, 201, {
-      success: true,
-      transactionId: txId,
-      reference: refSas,
-      montant: newTx.montant,
-      devise: 'XOF',
-      operateur: newTx.operateur,
-      statut: 'PENDING',
-      paymentUrl,
-      isLiveConnected,
-      instructions: `Demande de débit Mobile Money initiée pour le numéro ${newTx.telephone} sur le réseau ${newTx.operateur.toUpperCase()}.`
-    });
-    return true;
-  }
+      if (checkoutRes.ok && checkoutData.success && checkoutData.data?.checkout_url) {
+        const cData = checkoutData.data;
+        sendJson(res, 201, {
+          success: true,
+          mode: 'checkout',
+          sessionId: cData.id,
+          reference: cData.slug || cData.id,
+          checkoutUrl: cData.checkout_url,
+          paymentUrl: cData.checkout_url,
+          status: cData.status || 'PENDING',
+          amount: cData.amount,
+          currency: cData.currency,
+          isLiveConnected: true,
+          instructions: 'Session sécurisée SasPay créée. Redirection en cours...'
+        });
+        return true;
+      }
 
-  // 3. Statut d'une transaction: GET /api/saspay/status/:id
-  if (path.startsWith('/api/saspay/status/') && req.method === 'GET') {
-    const txId = path.replace('/api/saspay/status/', '').trim();
-    const tx = transactionsSaspayStore.get(txId);
-
-    if (!tx) {
-      sendJson(res, 404, {
+      sendJson(res, checkoutRes.status || 400, {
         success: false,
-        error: `Transaction non trouvée pour l'ID: ${txId}`
+        error: checkoutData?.error || checkoutData || 'Échec création session SasPay'
+      });
+      return true;
+    } catch (err: any) {
+      sendJson(res, 500, {
+        success: false,
+        error: err.message || 'Erreur réseau vers api.saspay.me'
       });
       return true;
     }
+  }
+
+  // 3. Statut d'une session ou d'un paiement SasPay
+  if (pathname.startsWith('/api/saspay/status') || pathname.startsWith('/api/saspay/checkout-status')) {
+    const id = pathname.split('/').filter(Boolean).pop() || query.get('id') || '';
+
+    if (!id || id === 'status' || id === 'checkout-status') {
+      sendJson(res, 400, { success: false, error: 'ID de transaction ou session manquant' });
+      return true;
+    }
+
+    // Vérifier d'abord comme checkout session
+    try {
+      const checkRes = await fetch(`${SASPAY_BASE_URL}/checkout-sessions/${id}/status/`, {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+
+      if (checkRes.ok) {
+        const cData: any = await checkRes.json();
+        sendJson(res, 200, {
+          success: true,
+          type: 'checkout_session',
+          data: cData.data || cData,
+          status: cData.data?.status || 'PENDING'
+        });
+        return true;
+      }
+    } catch {}
+
+    // Vérifier comme paiement direct (verify)
+    try {
+      const payRes = await fetch(`${SASPAY_BASE_URL}/payments/${id}/verify/`, {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+
+      if (payRes.ok) {
+        const pData: any = await payRes.json();
+        sendJson(res, 200, {
+          success: true,
+          type: 'payment',
+          data: pData.data || pData,
+          status: pData.data?.status || 'PENDING'
+        });
+        return true;
+      }
+    } catch {}
 
     sendJson(res, 200, {
       success: true,
-      transaction: tx
+      id,
+      status: 'PENDING'
     });
     return true;
   }
 
-  // 4. Confirmation ou Webhook SasPay: POST /api/saspay/webhook
-  if (path === '/api/saspay/webhook' && req.method === 'POST') {
-    const body = await parseBody(req);
-    const txId = body.transaction_id || body.id;
+  // 4. Initier un décaissement (Payout / Retrait)
+  if (pathname === '/api/saspay/payout' && req.method === 'POST') {
+    const { json: body } = await parseBody(req);
+    const montant = Number(body.montant) || 0;
+    const telephone = (body.telephone || '').trim();
+    const cleanPhone = telephone.replace(/[\s\-\+]/g, '');
+    const operateur = (body.operateur || 'wave').toLowerCase();
+    const country = (body.country || inferCountry(telephone)).toUpperCase();
+    const networkMethod = mapNetworkCode(operateur, country);
+    const idempotencyKey = `dropia_payout_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-    if (txId && transactionsSaspayStore.has(txId)) {
-      const existing = transactionsSaspayStore.get(txId)!;
-      existing.statut = body.status === 'FAILED' ? 'FAILED' : 'SUCCESS';
-      existing.dateConfirmation = new Date().toISOString();
-      transactionsSaspayStore.set(txId, existing);
+    try {
+      const payoutRes = await fetch(`${SASPAY_BASE_URL}/payouts/initialize/`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey
+        },
+        body: JSON.stringify({
+          amount: montant.toFixed(2),
+          currency: body.currency || 'XOF',
+          country,
+          method: networkMethod,
+          recipient: {
+            msisdn: cleanPhone
+          },
+          customer: {
+            phone: telephone.startsWith('+') ? telephone : `+${telephone}`
+          },
+          description: body.description || 'Retrait solde Dropia'
+        })
+      });
+
+      const payoutData: any = await payoutRes.json();
+
+      if (payoutRes.ok) {
+        sendJson(res, 200, {
+          success: true,
+          data: payoutData.data || payoutData,
+          message: 'Retrait Mobile Money initié avec succès'
+        });
+        return true;
+      }
+
+      sendJson(res, payoutRes.status || 400, {
+        success: false,
+        error: payoutData.error || payoutData,
+        serverIpNotice: payoutRes.status === 403 ? 'Veuillez autoriser l\'IP 34.34.246.130 dans votre tableau de bord SasPay (section IP Whitelist).' : undefined
+      });
+      return true;
+    } catch (err: any) {
+      sendJson(res, 500, {
+        success: false,
+        error: err.message || 'Erreur lors du décaissement SasPay'
+      });
+      return true;
+    }
+  }
+
+  // 5. Soldes Marchand (Merchant Balances)
+  if (pathname === '/api/saspay/balances' && req.method === 'GET') {
+    try {
+      const balRes = await fetch(`${SASPAY_BASE_URL}/merchant-balances/`, {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      const balData: any = await balRes.json();
+      sendJson(res, 200, {
+        success: true,
+        balances: balData.data?.results || balData.results || []
+      });
+      return true;
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+      return true;
+    }
+  }
+
+  // 6. Historique des transactions réelles SasPay
+  if (pathname === '/api/saspay/transactions' && req.method === 'GET') {
+    try {
+      const txRes = await fetch(`${SASPAY_BASE_URL}/transactions/`, {
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      const txData: any = await txRes.json();
+      sendJson(res, 200, {
+        success: true,
+        transactions: txData.data?.results || txData.results || []
+      });
+      return true;
+    } catch (err: any) {
+      sendJson(res, 500, { success: false, error: err.message });
+      return true;
+    }
+  }
+
+  // 7. Webhook SasPay (Vérification signature HMAC SHA-256)
+  if (pathname === '/api/saspay/webhook' && req.method === 'POST') {
+    const { raw: rawBody, json: body } = await parseBody(req);
+    const signature = (req.headers['x-webhook-signature'] || '').toString();
+    const timestamp = (req.headers['x-webhook-timestamp'] || '').toString();
+    const webhookSecret = process.env.SASPAY_WEBHOOK_SECRET || '';
+
+    if (webhookSecret && signature && timestamp) {
+      const nowSec = Math.floor(Date.now() / 1000);
+      const tsSec = parseInt(timestamp, 10);
+      if (Math.abs(nowSec - tsSec) <= 300) {
+        const expected = crypto
+          .createHmac('sha256', webhookSecret)
+          .update(`${timestamp}.${rawBody}`)
+          .digest('hex');
+        if (expected.toLowerCase() !== signature.toLowerCase()) {
+          sendJson(res, 401, { success: false, error: 'Invalid webhook signature' });
+          return true;
+        }
+      }
     }
 
     sendJson(res, 200, {
       success: true,
-      message: 'Webhook SasPay traité avec succès',
+      message: 'Webhook SasPay validé et traité',
       receivedAt: new Date().toISOString()
-    });
-    return true;
-  }
-
-  // 5. Liste des transactions: GET /api/saspay/transactions
-  if (path === '/api/saspay/transactions' && req.method === 'GET') {
-    const list = Array.from(transactionsSaspayStore.values());
-    sendJson(res, 200, {
-      success: true,
-      count: list.length,
-      transactions: list
     });
     return true;
   }
 
   sendJson(res, 404, {
     success: false,
-    error: `Route SasPay ${path} non trouvée`
+    error: `Route SasPay ${pathname} non trouvée`
   });
   return true;
 }
