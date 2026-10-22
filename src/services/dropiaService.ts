@@ -652,4 +652,36 @@ export class DropiaDatabaseService {
       };
     }
   }
+
+  /**
+   * Met à jour strictement le plan d'abonnement d'une agence ou d'un utilisateur
+   */
+  static async updatePlanAbonnement(
+    targetId: string,
+    plan: 'starter' | 'pro' | 'business',
+    cycle: 'mensuel' | 'annuel' = 'mensuel'
+  ): Promise<{ dateExpiration: string; limiteColis: number; limiteLivreurs: number }> {
+    const jours = cycle === 'annuel' ? 365 : 30;
+    const dateExpiration = new Date(Date.now() + jours * 24 * 3600 * 1000).toISOString();
+    const limiteColis = plan === 'business' ? 10000 : plan === 'pro' ? 2500 : 800;
+    const limiteLivreurs = plan === 'business' ? 100 : plan === 'pro' ? 20 : 5;
+
+    const payload = {
+      plan,
+      planStatut: 'actif' as const,
+      planExpireLe: dateExpiration,
+      dateExpiration,
+      limiteColis,
+      limiteLivreurs
+    };
+
+    if (targetId) {
+      // Mettre à jour dans 'users'
+      await updateDoc(doc(db, 'users', targetId), payload).catch(() => {});
+      // Mettre à jour dans 'agences'
+      await updateDoc(doc(db, 'agences', targetId), payload).catch(() => {});
+    }
+
+    return { dateExpiration, limiteColis, limiteLivreurs };
+  }
 }
