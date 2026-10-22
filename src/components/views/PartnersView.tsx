@@ -247,17 +247,17 @@ export const PartnersView: React.FC<PartnersViewProps> = ({ onRefresh }) => {
           <span className="text-xs text-slate-500">0 partenaires</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-5 sm:mx-0 px-5 sm:px-0">
+          <table className="w-full text-left text-xs min-w-[700px]">
             <thead className="bg-slate-50 border-y border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
               <tr>
-                <th className="py-2.5 px-3">Agence Partenaire</th>
-                <th className="py-2.5 px-3">Hub / Ville</th>
-                <th className="py-2.5 px-3">Flotte Active</th>
-                <th className="py-2.5 px-3">Grille Tarifaire (Centre / Périphérie)</th>
-                <th className="py-2.5 px-3">SLA & Note</th>
-                <th className="py-2.5 px-3">Statut</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Agence Partenaire</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Hub / Ville</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Flotte Active</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Grille Tarifaire (Centre / Périphérie)</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">SLA & Note</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Statut</th>
+                <th className="py-2.5 px-3 whitespace-nowrap text-right">Action</th>
               </tr>
             </thead>
           </table>

@@ -35,13 +35,13 @@ export const WalletView: React.FC<WalletViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Title & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
               Portefeuille & Finances (FCFA)
             </h1>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] sm:text-[11px] font-bold">
               ● Mode Production SasPay
             </span>
           </div>
@@ -50,58 +50,58 @@ export const WalletView: React.FC<WalletViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={onRefresh}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs cursor-pointer"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs cursor-pointer min-h-[40px]"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            Actualiser
+            <span className="hidden xs:inline">Actualiser</span>
           </button>
           <button
             onClick={() => setShowRetraitModal(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer min-h-[40px]"
           >
             <ArrowUpRight className="w-4 h-4 text-blue-600" />
-            Demander un Retrait
+            <span>Retrait</span>
           </button>
           <button
             onClick={() => navigate('/paiement?montant=20000&type=recharge')}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+            className="w-full sm:w-auto justify-center flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs cursor-pointer min-h-[40px]"
           >
             <Plus className="w-4 h-4" />
-            Recharger via Mobile Money
+            <span>Recharger via Mobile Money</span>
           </button>
         </div>
       </div>
 
       {/* Main Balance Banner */}
-      <div className="bg-gradient-to-br from-[#0a1124] to-[#131d3b] text-white p-6 rounded-2xl shadow-xl border border-slate-800 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-gradient-to-br from-[#0a1124] to-[#131d3b] text-white p-4 sm:p-6 rounded-2xl shadow-xl border border-slate-800 space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <span className="text-xs text-slate-400 block font-medium">
               Solde disponible en compte
             </span>
-            <div className="text-3xl sm:text-4xl font-black font-mono tracking-tight mt-1 text-emerald-400">
+            <div className="text-2xl sm:text-4xl font-black font-mono tracking-tight mt-1 text-emerald-400 tabular-nums">
               {walletBalance.toLocaleString('fr-FR')}{' '}
-              <span className="text-xl font-normal text-slate-300">FCFA</span>
+              <span className="text-lg sm:text-xl font-normal text-slate-300">FCFA</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <p className="text-[11px] text-slate-400 mt-1 max-w-xl">
               Fonds immédiatement disponibles pour couvrir vos frais de livraison ou être retirés vers votre Mobile Money.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto">
             <button
               onClick={() => setShowRetraitModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px]"
             >
               <ArrowUpRight className="w-3.5 h-3.5 text-blue-400" />
               Retirer vers Mobile Money
             </button>
             <button
               onClick={() => navigate('/paiement?montant=20000&type=recharge')}
-              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center justify-center gap-1.5"
+              className="flex-1 md:flex-none px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 cursor-pointer flex items-center justify-center gap-1.5 min-h-[42px]"
             >
               <Plus className="w-4 h-4" />
               + Approvisionner mon solde
@@ -130,16 +130,16 @@ export const WalletView: React.FC<WalletViewProps> = ({
           <span className="text-xs text-slate-500">Mouvements en temps réel</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-50 border-y border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
               <tr>
-                <th className="py-2.5 px-3">Référence</th>
-                <th className="py-2.5 px-3">Type</th>
-                <th className="py-2.5 px-3">Détail</th>
-                <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Statut</th>
-                <th className="py-2.5 px-3 text-right">Montant</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Référence</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Type</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Détail</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Date</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Statut</th>
+                <th className="py-2.5 px-3 text-right whitespace-nowrap">Montant</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

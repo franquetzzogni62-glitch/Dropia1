@@ -30,6 +30,7 @@ import { DropiaDatabaseService } from './services/dropiaService';
 import { DropiaAuthService } from './services/authService';
 import { auth, testConnection } from './firebase/config';
 import { onAuthStateChanged, type User } from 'firebase/auth';
+import { LayoutDashboard, Package, Bike, Store, Menu } from 'lucide-react';
 import type { Colis, Livreur, TransactionFinanciere, UserProfile } from './types';
 
 type AppUser = User | { uid: string; email: string | null; displayName?: string | null };
@@ -40,6 +41,7 @@ export default function App() {
 
   // Navigation & View Mode pour l'Agence
   const [activeTab, setActiveTab] = useState<TabKey>('dashboard');
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
 
   // Authentification résiliente (supporte Firebase Auth + session Firestore)
   const [currentUser, setCurrentUser] = useState<AppUser | null>(() => {
@@ -354,6 +356,7 @@ export default function App() {
       )}
 
       {/* Left Sidebar avec l'onglet E-commerçants */}
+      {/* Sidebar Responsive (Permanent sur desktop, Drawer glissant sur tablette & mobile) */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -363,6 +366,8 @@ export default function App() {
         userProfile={userProfile}
         onOpenRecharge={() => navigate('/paiement?montant=20000&type=recharge')}
         onOpenLanding={() => navigate('/')}
+        isMobileOpen={isMobileNavOpen}
+        onCloseMobile={() => setIsMobileNavOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -372,10 +377,11 @@ export default function App() {
           userProfile={userProfile}
           onOpenGuide={() => setActiveTab('settings')}
           onLogout={handleLogout}
+          onToggleMobileMenu={() => setIsMobileNavOpen(prev => !prev)}
         />
 
         {/* Dynamic Content Views */}
-        <main className="flex-1 p-6 md:p-8 max-w-[1400px] w-full mx-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 max-w-[1400px] w-full mx-auto pb-24 lg:pb-8">
           {activeTab === 'dashboard' && (
             <DashboardView
               colisList={colisList}
@@ -445,6 +451,65 @@ export default function App() {
 
           {activeTab === 'settings' && <SettingsView />}
         </main>
+
+        {/* Barre de navigation mobile & tablette basse (Thumb-friendly touch bar) */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#0a1124] border-t border-slate-800/90 px-2 py-1.5 flex items-center justify-around text-[10px] text-slate-400 select-none shadow-2xl backdrop-blur-md">
+          <button
+            type="button"
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex flex-col items-center gap-1 p-1.5 min-h-[44px] rounded-lg transition min-w-[54px] cursor-pointer ${
+              activeTab === 'dashboard' ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Accueil</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('orders')}
+            className={`flex flex-col items-center gap-1 p-1.5 min-h-[44px] rounded-lg transition min-w-[54px] relative cursor-pointer ${
+              activeTab === 'orders' ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Colis</span>
+            {colisList.length > 0 && (
+              <span className="absolute top-1 right-2.5 w-2 h-2 rounded-full bg-emerald-500" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('drivers')}
+            className={`flex flex-col items-center gap-1 p-1.5 min-h-[44px] rounded-lg transition min-w-[54px] cursor-pointer ${
+              activeTab === 'drivers' ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Bike className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Flotte</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('ecommercants')}
+            className={`flex flex-col items-center gap-1 p-1.5 min-h-[44px] rounded-lg transition min-w-[54px] cursor-pointer ${
+              activeTab === 'ecommercants' ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Store className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Marchands</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsMobileNavOpen(true)}
+            className="flex flex-col items-center gap-1 p-1.5 min-h-[44px] rounded-lg transition min-w-[54px] text-slate-400 hover:text-white cursor-pointer"
+          >
+            <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span>Menu</span>
+          </button>
+        </nav>
       </div>
 
       {/* Modals */}

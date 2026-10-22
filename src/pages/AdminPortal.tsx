@@ -364,28 +364,28 @@ export default function AdminPortal() {
 
       {/* Top Header Super Admin */}
       <header className="sticky top-0 z-40 bg-[#1E40AF] text-white border-b border-blue-950/20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-sm shrink-0">
               <ShieldCheck className="w-5 h-5 text-white" strokeWidth={1.75} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-black text-base tracking-tight text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-black text-base tracking-tight text-white truncate">
                   Dropia Admin
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-100 border border-blue-400/30 text-[10px] font-bold uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-100 border border-blue-400/30 text-[10px] font-bold uppercase tracking-wider shrink-0">
                   Super Admin
                 </span>
               </div>
-              <p className="text-[11px] text-blue-200">
+              <p className="text-[11px] text-blue-200 truncate hidden sm:block">
                 Contrôle général de la plateforme • Afrique de l'Ouest & Centrale
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-xs">
-            <div className="hidden sm:flex flex-col text-right">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs shrink-0">
+            <div className="hidden md:flex flex-col text-right">
               <span className="font-bold text-white">{adminUser.nom}</span>
               <span className="text-[11px] text-blue-200">{adminUser.email}</span>
             </div>
@@ -678,16 +678,16 @@ export default function AdminPortal() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[750px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Agence</th>
-                      <th className="py-3 px-4">Contact</th>
-                      <th className="py-3 px-4">Hub / Pays</th>
-                      <th className="py-3 px-4">Formule / Plan</th>
-                      <th className="py-3 px-4">Quotas (Colis / Livreurs)</th>
-                      <th className="py-3 px-4">Statut</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Agence</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Contact</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Hub / Pays</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Formule / Plan</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Quotas (Colis / Livreurs)</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Statut</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -785,15 +785,15 @@ export default function AdminPortal() {
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[700px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Réf Transaction</th>
-                      <th className="py-3 px-4">Type</th>
-                      <th className="py-3 px-4">Destinataire</th>
-                      <th className="py-3 px-4">Date</th>
-                      <th className="py-3 px-4">Statut</th>
-                      <th className="py-3 px-4 text-right">Montant</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Réf Transaction</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Type</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Destinataire</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Date</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Statut</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Montant</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -858,17 +858,17 @@ export default function AdminPortal() {
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[750px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">N° Tracking</th>
-                      <th className="py-3 px-4">Client</th>
-                      <th className="py-3 px-4">Destination</th>
-                      <th className="py-3 px-4">Montant COD</th>
-                      <th className="py-3 px-4">Livreur Assigné</th>
-                      <th className="py-3 px-4">Statut</th>
-                      <th className="py-3 px-4">Code OTP</th>
-                      <th className="py-3 px-4 text-right">Action Forcée</th>
+                      <th className="py-3 px-4 whitespace-nowrap">N° Tracking</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Client</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Destination</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Montant COD</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Livreur Assigné</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Statut</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Code OTP</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Action Forcée</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -966,17 +966,17 @@ export default function AdminPortal() {
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[750px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Livreur</th>
-                      <th className="py-3 px-4">Téléphone</th>
-                      <th className="py-3 px-4">Code PIN</th>
-                      <th className="py-3 px-4">Zone d'intervention</th>
-                      <th className="py-3 px-4">Véhicule</th>
-                      <th className="py-3 px-4">Sacoche Espèces (COD)</th>
-                      <th className="py-3 px-4">Statut</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Livreur</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Téléphone</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Code PIN</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Zone d'intervention</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Véhicule</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Sacoche Espèces (COD)</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Statut</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1057,16 +1057,16 @@ export default function AdminPortal() {
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[700px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Boutique</th>
-                      <th className="py-3 px-4">Contact</th>
-                      <th className="py-3 px-4">Ville</th>
-                      <th className="py-3 px-4">Agence Assignée</th>
-                      <th className="py-3 px-4">Commandes</th>
-                      <th className="py-3 px-4">Statut</th>
-                      <th className="py-3 px-4 text-right">Action</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Boutique</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Contact</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Ville</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Agence Assignée</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Commandes</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Statut</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -1385,13 +1385,13 @@ export default function AdminPortal() {
 
             <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs min-w-[650px]">
                   <thead className="bg-slate-50 border-b border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                     <tr>
-                      <th className="py-3 px-4">Action</th>
-                      <th className="py-3 px-4">Détails</th>
-                      <th className="py-3 px-4">Auteur</th>
-                      <th className="py-3 px-4 text-right">Date & Heure</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Action</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Détails</th>
+                      <th className="py-3 px-4 whitespace-nowrap">Auteur</th>
+                      <th className="py-3 px-4 whitespace-nowrap text-right">Date & Heure</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">

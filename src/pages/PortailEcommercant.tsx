@@ -263,21 +263,21 @@ export const PortailEcommercant: React.FC<PortailEcommercantProps> = ({
       )}
 
       {/* Header Portail E-commerçant */}
-      <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs">
+      <header className="h-16 bg-white border-b border-slate-200 px-3 sm:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center shadow-xs shrink-0">
             <Store className="w-5 h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-slate-900 text-sm tracking-tight">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="font-bold text-slate-900 text-sm tracking-tight truncate max-w-[130px] sm:max-w-[240px] md:max-w-none">
                 {ecommercantData?.nomBoutique || currentUserProfile?.nomBoutique || 'Portail E-commerçant'}
               </span>
-              <span className="text-[10px] px-2 py-0.2 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold shrink-0">
                 E-commerçant
               </span>
             </div>
-            <span className="text-[11px] text-slate-500">
+            <span className="text-[11px] text-slate-500 truncate block">
               {ecommercantData?.contact || currentUserProfile?.nom} • {ecommercantData?.ville || 'Dakar'}
             </span>
           </div>
@@ -494,17 +494,17 @@ export const PortailEcommercant: React.FC<PortailEcommercantProps> = ({
           </div>
 
           {/* Table des Colis */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div className="overflow-x-auto -mx-6 sm:mx-0 px-6 sm:px-0">
+            <table className="w-full text-left text-xs min-w-[750px]">
               <thead className="bg-slate-50 border-y border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
                 <tr>
-                  <th className="py-2.5 px-3">N° Suivi</th>
-                  <th className="py-2.5 px-3">Client</th>
-                  <th className="py-2.5 px-3">Destination</th>
-                  <th className="py-2.5 px-3">Montant COD</th>
-                  <th className="py-2.5 px-3">Statut</th>
-                  <th className="py-2.5 px-3">Livreur Assigné</th>
-                  <th className="py-2.5 px-3 font-mono">Code OTP</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">N° Suivi</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Client</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Destination</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Montant COD</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Statut</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">Livreur Assigné</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap font-mono">Code OTP</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -524,7 +524,7 @@ export const PortailEcommercant: React.FC<PortailEcommercantProps> = ({
                       </div>
                       <button
                         onClick={() => setShowNewOrderModal(true)}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs cursor-pointer min-h-[40px]"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Créer un colis</span>
@@ -534,22 +534,22 @@ export const PortailEcommercant: React.FC<PortailEcommercantProps> = ({
                 ) : (
                   colisList.map((c) => (
                     <tr key={c.id} className="hover:bg-slate-50/70 transition">
-                      <td className="py-3 px-3 font-mono font-bold text-emerald-700">
+                      <td className="py-3 px-3 whitespace-nowrap font-mono font-bold text-emerald-700">
                         {c.trackingNumber}
                       </td>
-                      <td className="py-3 px-3">
+                      <td className="py-3 px-3 whitespace-nowrap">
                         <div className="font-bold text-slate-900">{c.nomClient}</div>
                         <span className="text-[10px] text-slate-400 font-mono">
                           {c.telephoneClient}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-slate-600">
+                      <td className="py-3 px-3 whitespace-nowrap text-slate-600">
                         {c.commune || c.ville}
                       </td>
-                      <td className="py-3 px-3 font-mono font-bold text-slate-900">
+                      <td className="py-3 px-3 whitespace-nowrap font-mono font-bold text-slate-900">
                         {c.montantCOD.toLocaleString('fr-FR')} F
                       </td>
-                      <td className="py-3 px-3">
+                      <td className="py-3 px-3 whitespace-nowrap">
                         {c.statut === 'livre' ? (
                           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -566,10 +566,10 @@ export const PortailEcommercant: React.FC<PortailEcommercantProps> = ({
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-3 text-slate-600">
+                      <td className="py-3 px-3 whitespace-nowrap text-slate-600">
                         {c.nomLivreur || 'Agence en cours d\'assignation'}
                       </td>
-                      <td className="py-3 px-3 font-mono font-bold text-slate-700">
+                      <td className="py-3 px-3 whitespace-nowrap font-mono font-bold text-slate-700">
                         <span className="px-2 py-0.5 rounded bg-slate-100 text-[10px]">
                           {c.codeOTP || '----'}
                         </span>

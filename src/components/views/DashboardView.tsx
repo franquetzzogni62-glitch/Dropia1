@@ -66,16 +66,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Title & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
               Tableau de Bord & Dispatch
             </h1>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] sm:text-[11px] font-semibold">
               ● Hub {displayCity}
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-semibold">
+            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] sm:text-[11px] font-semibold">
               Plan {displayPlan}
             </span>
           </div>
@@ -84,41 +84,41 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={onRefresh}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs cursor-pointer min-h-[40px]"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            Actualiser
+            <span className="hidden xs:inline">Actualiser</span>
           </button>
           <button
             onClick={onOpenNewOrder}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-xs cursor-pointer min-h-[40px]"
           >
             <Plus className="w-4 h-4" />
-            Nouvelle Commande
+            <span>Nouvelle Commande</span>
           </button>
         </div>
       </div>
 
       {/* Dark Operation Banner */}
-      <div className="rounded-xl bg-[#0a1124] text-white p-5 border border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4">
+      <div className="rounded-2xl bg-[#0a1124] text-white p-4 sm:p-5 border border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30 text-[11px]">
               Réseau Opérationnel
             </span>
             <span className="text-slate-300">
-              Mode actif : <strong className="text-white">Gestion Hybride (Flotte + Partenaires)</strong>
+              Mode : <strong className="text-white">Gestion Hybride (Flotte + Partenaires)</strong>
             </span>
           </div>
 
-          <h2 className="text-lg font-black tracking-tight">
+          <h2 className="text-base sm:text-lg font-black tracking-tight">
             {nomEntite} — {displayCity}
           </h2>
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-400">
             <span className="flex items-center gap-1 text-slate-400">
               <Info className="w-3.5 h-3.5 text-slate-500" />
               Mobile Money disponible
@@ -130,18 +130,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pt-2 md:pt-0">
           <button
             onClick={onOpenSettings}
-            className="px-3.5 py-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700"
+            className="flex-1 md:flex-none justify-center px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700 cursor-pointer min-h-[40px]"
           >
-            Modifier paramètres
+            Paramètres
           </button>
           <button
             onClick={onOpenNewOrder}
-            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow"
+            className="flex-1 md:flex-none justify-center flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow cursor-pointer min-h-[40px]"
           >
-            Créer une commande
+            <span>Créer commande</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -261,17 +261,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-left text-xs min-w-[650px]">
             <thead className="bg-slate-50 border-y border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
               <tr>
-                <th className="py-2.5 px-3">Commande</th>
-                <th className="py-2.5 px-3">Client & Contact</th>
-                <th className="py-2.5 px-3">Destination</th>
-                <th className="py-2.5 px-3">Montant</th>
-                <th className="py-2.5 px-3">Coursier</th>
-                <th className="py-2.5 px-3">Code OTP</th>
-                <th className="py-2.5 px-3">Statut</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Commande</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Client & Contact</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Destination</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Montant</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Coursier</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Code OTP</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Statut</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -301,7 +301,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               ) : (
                 colisList.map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50/70 transition">
-                    <td className="py-3 px-3 font-mono font-bold text-slate-900">
+                    <td className="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">
                       {c.trackingNumber}
                     </td>
                     <td className="py-3 px-3">
@@ -310,19 +310,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     </td>
                     <td className="py-3 px-3">
                       <div className="text-slate-800 font-medium">{c.commune}</div>
-                      <div className="text-[10px] text-slate-400">{c.adresse}</div>
+                      <div className="text-[10px] text-slate-400 truncate max-w-[140px]">{c.adresse}</div>
                     </td>
-                    <td className="py-3 px-3">
-                      <div className="font-bold text-slate-900 font-mono">
+                    <td className="py-3 px-3 whitespace-nowrap">
+                      <div className="font-bold text-slate-900 font-mono tabular-nums">
                         {(c.montantCOD || 0).toLocaleString('fr-FR')} FCFA
                       </div>
                       <span className="text-[10px] text-slate-500">Cash (COD)</span>
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-3 px-3 whitespace-nowrap">
                       <div className="font-medium text-slate-800">{c.nomLivreur || 'Non assigné'}</div>
                       <span className="text-[10px] text-slate-400">Flotte Interne</span>
                     </td>
-                    <td className="py-3 px-3 font-mono font-bold text-slate-700">
+                    <td className="py-3 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">
                       {c.codeOTP ? (
                         <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200">
                           {c.codeOTP}
@@ -331,7 +331,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         '—'
                       )}
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-3 px-3 whitespace-nowrap">
                       {c.statut === 'livre' ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />

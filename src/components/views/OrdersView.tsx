@@ -65,17 +65,17 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Title & Top Action */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
               Commandes & Expéditions
             </h1>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-bold">
+            <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] sm:text-[11px] font-bold">
               ● Mode Production (Live)
             </span>
-            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[11px] font-semibold">
-              {totalCommandes} Colis en base
+            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] sm:text-[11px] font-semibold">
+              {totalCommandes} Colis
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
@@ -83,26 +83,26 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <button
             onClick={onRefresh}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-2xs min-h-[40px] cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            Actualiser
+            <span className="hidden xs:inline">Actualiser</span>
           </button>
           <button
             onClick={onOpenNewOrder}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs"
+            className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition shadow-xs min-h-[40px] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            Nouvelle Commande
+            <span>Nouvelle Commande</span>
           </button>
         </div>
       </div>
 
       {/* 4 Stat KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Commandes */}
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-2">
           <div className="flex items-center justify-between">
@@ -113,7 +113,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               <Package className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900 font-mono">
+          <div className="text-xl font-black text-slate-900 font-mono tabular-nums">
             {totalCommandes}
           </div>
           <span className="text-[11px] text-slate-500 font-medium">
@@ -131,7 +131,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               <Clock className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900 font-mono">
+          <div className="text-xl font-black text-slate-900 font-mono tabular-nums">
             {aExpedier}
           </div>
           <span className="text-[11px] text-orange-600 font-medium">
@@ -149,7 +149,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               <Truck className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900 font-mono">
+          <div className="text-xl font-black text-slate-900 font-mono tabular-nums">
             {enRoute}
           </div>
           <span className="text-[11px] text-amber-600 font-medium">
@@ -167,7 +167,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               <DollarSign className="w-3.5 h-3.5" />
             </div>
           </div>
-          <div className="text-xl font-black text-slate-900 font-mono">
+          <div className="text-xl font-black text-slate-900 font-mono tabular-nums">
             {codTotal.toLocaleString('fr-FR')} <span className="text-xs font-normal text-slate-500">FCFA</span>
           </div>
           <span className="text-[11px] text-emerald-600 font-medium">
@@ -177,10 +177,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
       </div>
 
       {/* Orders List & Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <h3 className="font-bold text-slate-900 text-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <h3 className="font-bold text-slate-900 text-xs shrink-0">
               Liste des commandes ({filteredColis.length})
             </h3>
             <input
@@ -188,15 +188,15 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
               placeholder="Rechercher tracking, client, commune..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 w-56 sm:w-72"
+              className="px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 focus:outline-none focus:border-emerald-600 w-full sm:w-72"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs shrink-0">
             <select
               value={selectedStatut}
               onChange={(e) => setSelectedStatut(e.target.value)}
-              className="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none"
+              className="w-full sm:w-auto px-3 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-medium focus:outline-none cursor-pointer"
             >
               <option value="Tous les statuts">Tous les statuts</option>
               <option value="en_cours">En route</option>
@@ -208,18 +208,18 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
         </div>
 
         {/* Orders Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full text-left text-xs min-w-[700px]">
             <thead className="bg-slate-50 border-y border-slate-200 uppercase text-[10px] text-slate-500 font-bold tracking-wider">
               <tr>
-                <th className="py-2.5 px-3">N° Tracking</th>
-                <th className="py-2.5 px-3">Client</th>
-                <th className="py-2.5 px-3">Destination / Commune</th>
-                <th className="py-2.5 px-3">Montant COD</th>
-                <th className="py-2.5 px-3">Frais</th>
-                <th className="py-2.5 px-3">Livreur Assigné</th>
-                <th className="py-2.5 px-3">Statut</th>
-                <th className="py-2.5 px-3">Code OTP</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">N° Tracking</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Client</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Destination / Commune</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Montant COD</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Frais</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Livreur Assigné</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Statut</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">Code OTP</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

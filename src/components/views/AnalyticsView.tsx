@@ -157,9 +157,9 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
 
           {/* Bar Chart Visualization */}
-          <div className="h-64 flex items-end justify-center gap-16 pt-8 pb-4 border-b border-slate-100">
+          <div className="h-64 flex items-end justify-center gap-6 sm:gap-16 pt-8 pb-4 border-b border-slate-100">
             {/* Livrées Bar */}
-            <div className="flex flex-col items-center gap-2 w-32">
+            <div className="flex flex-col items-center gap-2 w-24 sm:w-32">
               <span className="font-mono font-bold text-xs text-slate-700">{livrees}</span>
               <div
                 className="w-full bg-emerald-500 rounded-t-lg transition-all duration-500 shadow"
@@ -169,7 +169,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </div>
 
             {/* En cours Bar */}
-            <div className="flex flex-col items-center gap-2 w-32">
+            <div className="flex flex-col items-center gap-2 w-24 sm:w-32">
               <span className="font-mono font-bold text-xs text-slate-700">{enCours}</span>
               <div
                 className="w-full bg-amber-500 rounded-t-lg transition-all duration-500 shadow"
